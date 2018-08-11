@@ -1,2 +1,3 @@
 # SIDINFOR
-- Module de gestion des rapports de stage et des mÃ©moires des Licences et Masters du DeptInfo.
+SIDINFOR est une application modulaire de gestion des activités du département d'informatique : 
+ 	- Module de gestion des rapports de stage et des mémoires ;
