@@ -1,0 +1,49 @@
+body
+{
+  	font-family: Georgia, Arial, Tahoma, Verdana, , sans-serif;
+}
+
+body div#contenu
+{
+	position: relative;
+	top: 4em;
+	width: 100%;
+}
+
+body div#contenu div#centre
+{
+	position: relative;
+	width: 100%;
+}
+
+body div#contenu div#ban
+{
+	margin-bottom: 0.50em;
+	height: 8.5em;
+	background-color: lightgrey;
+	border-radius: 0.75em;
+}
+
+
+#contenu #centre h1
+{
+	color: #3b5998;
+	border-bottom: 0.5px solid #3b5998;
+	font-size: 1em;
+	display: inline;
+}
+
+
+@media (max-width: 768px)
+{
+	#ban
+	{
+		display: none !important;
+	}
+}
+
+.center
+{
+	margin-top: 5em;
+	margin-bottom: 5em;
+}

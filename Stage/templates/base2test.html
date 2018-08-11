@@ -1,0 +1,120 @@
+{% extends "base1.html" %}
+{% load staticfiles %}
+{% block CSSBase %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/base2test.css' %}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/docs.min.css' %}"/>
+{% endblock %}
+{% block autreCSS %}{% endblock %}
+{% block title %}{% endblock %}
+{% block bodyId %}{% endblock %}
+
+{% block headerContenu %}
+<header>
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <div class="navbar-brand">SIDINFOR</div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav mr-auto">
+    	    <li class="nav-item active" title="accueil"> <a class="nav-link btn btn-sm btn-info" href="{% url 'accueil' %}"> <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 8 8"><path d="M4 0l-4 3h1v4h2v-2h2v2h2v-4.03l1 .03-4-3z" /></svg> <!-- Accueil --> </a> </li>
+        </ul>
+        <div class="mt-2 mt-md-0">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active" title="{{user.etudiant.prenom|capfirst}} {{user.etudiant.nom|capfirst}}">
+              <a class="nav-link btn btn-sm mr-4 btn-info" href="{% url 'profile' %}"> <svg id="profile" class="" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 8 8"><path d="M4 0c-1.1 0-2 1.12-2 2.5s.9 2.5 2 2.5 2-1.12 2-2.5-.9-2.5-2-2.5zm-2.09 5c-1.06.05-1.91.92-1.91 2v1h8v-1c0-1.08-.84-1.95-1.91-2-.54.61-1.28 1-2.09 1-.81 0-1.55-.39-2.09-1z" /></svg> <!-- {% block info_user %} {{user.etudiant.prenom|capfirst}} {{user.etudiant.nom|capfirst}} {% endblock %} --> </a>
+             </li>
+            <li class="nav-item" title="votre compte">
+              <a class="nav-link btn btn-sm btn-info mr-4" href="#"> <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 8 8"> <path d="M3.5 0l-.5 1.19c-.1.03-.19.08-.28.13l-1.19-.5-.72.72.5 1.19c-.05.1-.09.18-.13.28l-1.19.5v1l1.19.5c.04.1.08.18.13.28l-.5 1.19.72.72 1.19-.5c.09.04.18.09.28.13l.5 1.19h1l.5-1.19c.09-.04.19-.08.28-.13l1.19.5.72-.72-.5-1.19c.04-.09.09-.19.13-.28l1.19-.5v-1l-1.19-.5c-.03-.09-.08-.19-.13-.28l.5-1.19-.72-.72-1.19.5c-.09-.04-.19-.09-.28-.13l-.5-1.19h-1zm.5 2.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5z"/></svg> <!-- Compte -->  </a>
+            </li>
+            <li class="nav-item" title="se déconnecter">
+              <a class="nav-link btn btn-sm btn-danger active" href="{% url 'deconnexion' %}"> <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 8 8"> <path d="M3 0v1h4v5h-4v1h5v-7h-5zm-1 2l-2 1.5 2 1.5v-1h4v-1h-4v-1z" /></svg> <!--Déconnexion --> </a>
+            </li>
+           </ul>
+        </div>
+    </div>
+  </nav>
+</header>
+{% endblock %}
+
+{% block contenu %}
+<div class="container-fluid">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 bd-sidebar" style="border-top-right-radius: 0.75em;">
+      <button class="btn btn-link d-md-none p-0 ml-3" type="button" data-toggle="collapse" data-target="#bd-docs-nav" aria-controls="bd-docs-nav" aria-expanded="false" aria-label="Toggle docs navigation"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 30 30" width="30" height="30" focusable="false"><title>Liens rapides</title><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" d="M4 7h22M4 15h22M4 23h22"/></svg>
+      </button>
+      <nav class="collapse bd-links" id="bd-docs-nav">
+        <div class="navbar-text">Accés rapide</div>        
+        <div class="bd-toc-item" id="drapport">
+          <a class="bd-toc-link" href="#" id="lienRapport"> Rapport </a>
+          <ul class="nav bd-sidenav navbar">
+            <li class="" id="lien1"> <a href="{% url 'Rapport:consulterLesRapports' %}"> Consulter un {% if user.niveau.nom_classe == "Licence 3" %} rapport {% elif user.niveau.nom_classe == "Master 2" %} mémoire {% endif %} </a>  </li>
+            <li class=""> <a href="{% url 'Rapport:consulterMesRapports' %}"> Consulter mes {% if user.niveau.nom_classe == "Licence 3" %} rapports {% elif user.niveau.nom_classe == "Master 2" %} mémoires {% endif %} </a>  </li>
+           <li class=""> <a href="{% url 'Rapport:depotRapport' %}"> Ajout un nouveau stage</a> </li> 
+          </ul>      
+        </div>
+
+        <div class="bd-toc-item" id="telecharger">
+          <a class="bd-toc-link" href="#" id="lienTelecharger">Télécharger</a>
+          <ul class="nav bd-sidenav navbar">
+            <li class="" id="lien2"> <a href="{% url 'programmes' %}"> Programme </a> </li>
+          </ul>   
+        </div>
+
+      {% if user.niveau.nom_classe == "Licence 3" %}
+        <div class="bd-toc-item" id="inscription">
+          <a class="bd-toc-link" href="#" id="lienInscription">Inscription</a>
+          <ul class="nav bd-sidenav navbar">
+            <li class="" id="lien3"> <a href="#"> Master </a> </li>
+            <li class=""> <a href="#"> Doctorat </a> </li>
+          </ul>   
+        </div>
+      {% endif %}
+
+      <div class="bd-toc-item" id="dossier">
+        <a class="bd-toc-link" href="#" id="lienDossier">Dossier</a>
+        <ul class="nav bd-sidenav navbar" >
+          <li class="" id="lien4"> <a href="#"> Mon dossier </a> </li>
+        </ul>   
+      </div>
+
+      <div class="bd-toc-item" id="contacts">
+        <a class="bd-toc-link" href="#" id="lienContacts">Contacts</a>
+        <ul class="nav bd-sidenav navbar">
+          <li class="" id="lien5"> <a href="#"> Contact 1 </a> </li>
+          <li class=""> <a href="#"> Contact 2 </a> </li>
+        </ul>   
+      </div>
+
+      </nav> 
+    </div>
+
+    <main class="col-12 col-md-9 col-xl-10 bd-content" role="main">
+      <div class="col-12" id="ban">
+        {% block banniere %}
+          {% include 'carousel.html' %}
+        {% endblock %}
+      </div>
+      <div class="" id="centre">
+        {% block centre %}
+          {% block breadcrumb %}{% endblock %}
+        {% block info %}{% endblock %}
+        {% endblock %}  
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %} <!--
+  <footer class="footer">
+    <div class="container">
+      <span class="text-muted">Prosition de pied de page</span>
+    </div>
+  </footer>  -->
+{% endblock %}
+
+{% block script %}
+  <script type="text/javascript" src="{% static 'bootstrap/js/docs.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/base2.js' %}"></script>
+{% endblock %}

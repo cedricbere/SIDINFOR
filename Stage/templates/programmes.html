@@ -1,0 +1,45 @@
+{% extends "base2test.html" %}
+{% load staticfiles %}
+{% block autreCSS %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/liste_table.css' %}"/> 
+{% endblock %}
+{% block title %}Programmes des matières{% endblock %}
+{% block bodyId %}programmes{% endblock %}
+
+{% block centre %}
+{% block breadcrumb %}
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"> <a href="{% url 'accueil' %}">Accueil</a></li>
+		<li class="breadcrumb-item active">Programmes</li>
+	</ol>
+</nav>
+{% endblock %}
+
+{% include 'recherche.html' %}
+{% block info %}
+<center class="center"> <h1>Liste des programmes de cours proposés par le département</h1> </center>
+{% if matieres|length == 0 %}
+	<p class="errorlist"> Aucun programme </p>
+	<p> <a href="{% url 'accueil' %}"> Ratour à l'accueil </a> </p>
+{% else %}
+	{% for semestre in semestres %}
+		<table border="1">
+			<tr> <th colspan="4"> Programme de cours {{semestre.niveau.nom_classe|capfirst}} {{semestre.nom_semestre|capfirst}} <a class="close" href="#">Télécharger ce programme en pdf</a> </th> </tr>
+			<tr> <th>Code</th> <th>Unité d'enseignement</th> <th>Éléments constitutifs</th> <th>Crédits</th> </tr>
+		{% for matiere in matieres %}
+			{% if matiere.ue.semestre == semestre %}
+				<tr>
+					<td> {{matiere.ue.code|upper}} </td>
+					<td> {{matiere.ue.nom_unite|title}} </td>
+					<td> {{matiere.nom_matiere|title}} </td>
+					<td> {{matiere.credits}} </td>	
+				</tr>
+			{% endif %}
+		{% endfor %}
+		</table>
+	{% endfor %}
+{% endif %}
+{% endblock %}
+
+{% endblock %}

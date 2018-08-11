@@ -1,0 +1,48 @@
+body
+{
+  min-height: 75em;
+}
+
+body section#contenu
+{
+	position: absolute;
+	top: 12em;
+}
+
+body section#contenu div#blockGauche h3#liens
+{
+	text-align: center;
+	font-style: italic;
+	margin-bottom: 30px;
+}
+
+body section#contenu div#blockGauche
+{
+	min-height: 100%;
+	width: 15em;
+	border-right: 1px solid lightblue;
+	background-color: #eeeedd;
+}
+
+body section#contenu div#centre
+{
+	margin: 0 0 0 7px;
+	position: absolute;
+	top: 10em;
+
+}
+
+body section#contenu div#ban
+{
+	margin-bottom: 50px;
+	border-bottom: 1px solid;
+	height: 8em;
+	align-content: center;
+	background-color: lightgrey;
+}
+
+#contenu ul li.nav-item
+{
+	font-size: 15px;
+}
+

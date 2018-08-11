@@ -1,0 +1,46 @@
+{% extends "base1.html" %}
+{% load staticfiles %}
+{% block title %}Inscription{% endblock %}
+{% block autreCSS%} <link rel="stylesheet" type="text/css" href="{% static 'css/form.css' %}"/> {% endblock %}
+{% block bodyId %}inscription{% endblock %}
+
+{% block contenu %}
+	<h1> Inscription </h1>
+
+	<form>
+		<p>
+			<label for="typeProfile"> S'inscrire en tant que: </label>
+			<select id = "typeProfile">
+				<option value="etudiant" {% if FormEtudiant.is_bound %}
+						selected="selected" {% endif %}> Étudiant </option>
+				<option value="postulant" {% if FormPostulant.is_bound %} 
+						selected="selected" {% endif %}> Postulant en Master  </option>
+			</select>
+		</p>
+	</form>
+
+	<form action="" method="post">
+		{% csrf_token %}
+		<fieldset id = "FormEtudiant">
+			<legend> Information Personnelle </legend>
+			{{etudiant.as_p}}
+		</fieldset>
+		
+		<fieldset>
+			<legend> Compte </legend>
+			{{ erreur }}
+			{{compte.as_p}}
+		</fieldset>
+		
+		<div class="btn bnt-group">
+			<input type="hidden" value="etudiant" name="typeProfile" />
+			<input type="submit" value="Envoyer" class="btn btn-success btn-link" />
+			<a class="btn btn-danger" href="{% url 'login' %}"> Annuler </a>
+		</div>
+	</form>
+	
+{% endblock %}
+
+{% block script %}
+	<script type="text/javascript" src="{% static 'js/inscription.js' %}"></script>
+{% endblock %}

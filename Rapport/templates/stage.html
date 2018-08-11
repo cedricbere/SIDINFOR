@@ -1,0 +1,144 @@
+{% extends "base2test.html" %}
+{% load staticfiles %}
+{% block autreCSS %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/form.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/stage.css' %}"/>
+{% endblock %}
+{% block title %}Dépot de rapport de stage{% endblock %}
+{% block bodyId %}stageRapport{% endblock %}
+
+
+
+{% block centre %}
+{% block breadcrumb %}
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"> <a href="{% url 'accueil' %}">Accueil</a></li>
+		<li aria-current="page" class="breadcrumb-item active">Formulaire de dépot de stage</li>
+	</ol>
+</nav>
+{% endblock %}
+{% include 'recherche.html' %}
+{% block info %}
+	<nav id="onglet" class="row nav nav-tabs"> 
+		<div class="col-4 col-md-1 col-sm-2 col-lg-4 col-xl-4"> <a href="#stage" class="nav-item nav-link active" data-toggle="tab" id="aStage" style="background-color: lightblue;"> <center> Stage </center> </a> </div>
+		<div class="col-4 col-md-1 col-sm-2 col-lg-4 col-xl-4"> <a href="#rapport" class="nav-item nav-link" data-toggle="tab" id="aRapport"> <center> Rapport </center> </a> </div>
+		<div class="col-4 col-md-1 col-sm-2 col-lg-4 col-xl-4"> <a href="#soutenance" class="nav-item nav-link" data-toggle="tab" id="aSoutenance"> <center> Soutenance </center> </a>  </div>
+	</nav>
+
+	<div class="tab-content">
+
+		<div id="stage" class="tab-pane active">
+			<center class="center"> <h1> Information sur le stage </h1> </center>
+		{% if not dernierStage %}
+			<form method="get" action="" class="container">
+				{{ stage.as_p }}
+				<div class="btn-group">
+					<input type="hidden" name="type" value="stage"/>
+					<input type="submit" value="Enregistrer" class="btn"/>
+					<input type="reset" name="Efface" class="btn"/>
+				</div>
+			</form>
+		{% else %}
+			<div class="visible container" id="st1">
+				<dl>
+					<dt>Lieu du stage: </dt>
+					<dd> {{dernierStage.lieu}} </dd>
+
+					<dt>Date début: </dt>
+					<dd> {{dernierStage.dateDebut}} </dd>
+
+					<dt> État état d'avancement: </dt>
+					<dd> {{dernierStage.etat}} </dd>
+
+					<dt>Maître de Stage: </dt>
+					<dd> {{dernierStage.maitreStage.prenom}} {{dernierStage.maitreStage.nom}} </dd>
+
+					<dt> Superviseur: </dt>
+					<dd> {{dernierStage.superviseur.prenom}} {{dernierStage.superviseur.nom}} </dd>
+				</dl>
+				<a href="#" class="btn btn-primary" id="modif1">Modifier</a>
+			</div>
+		{% endif %}
+		</div>
+
+		<div id="rapport" class="tab-pane">
+			<center class="center"> <h1> Information sur le rapport </h1> </center>
+		{% if not  dernierStage.rapport %}
+			<form method="post" action="" enctype="multipart/form-data" class="container">
+				{% csrf_token %}
+				{{ rapport.as_p }}
+				<div class="btn-group">
+					<input type="hidden" name="type" value="rapport"/>
+					<input type="submit" value="Enregistrer" class="btn"/>
+					<input type="reset" name="Effacer" class="btn"/>		
+				</div>
+			</form>
+		{% else %}
+			<div class="visible container" id="rp1">
+				<dl>
+					<dt>Thème: </dt>
+					<dd> {{dernierStage.rapport.theme}} </dd>
+	
+					<dt>Résumé: </dt>
+					<dd> {{dernierStage.rapport.resume|truncatewords:100}} </dd>
+
+					<dt> Date de chargement du rapport: </dt>
+					<dd> {{dernierStage.rapport.dateEnvoi}} </dd>
+
+					<dt>Date de modification: </dt>
+					<dd> {{dernierStage.rapport.dateModif}} </dd>
+
+					<dt> Rapport uploadé: </dt>
+					<dd> {{dernierStage.rapport.fichier}} </dd>
+				</dl>
+				<a href="#" class="btn btn-primary" id="modif2">Modifier</a>
+			</div>
+		{% endif %}
+		</div>
+
+		<div id="soutenance" class="tab-pane">
+			<center class="center"> <h1> Information sur la soutenance </h1> </center>
+			{% if not dernierStage.soutenance %}
+				<form method="get" action="" class="container">
+					{{ soutenance.as_p }}
+					<div class="btn-group">
+						<input type="hidden" name="type" value="soutenance"/>
+						<input type="submit" value="Enregistrer" class="btn"/>
+						<input type="reset" value="Effacer" class="btn"/>
+					</div>
+				</form>
+			{% else %}
+				<div class="visible container" id="sout1">
+					<dl>
+						<dt>Date de soutenance: </dt>
+						<dd> {% if dernierStage.stoutenance.dateEffective %} {{dernierStage.soutenance.dateEffective}}  {% else %} {{dernierStage.soutenance.datePrevu}} {% endif %} </dd>
+
+						<dt> Salle: </dt>
+						<dd> {{dernierStage.soutenance.salle}} </dd>
+
+						<dt>Heure: </dt>
+						<dd> {{dernierStage.soutenance.heure}} </dd>
+
+					{% if dernierStage.soutenance.jury %}
+						<dt>Jury: </dt>
+						<dd> {{dernierStage.soutenance.jury}} </dd>
+					{%endif%}
+					{% if dernierStage.soutenance.note %}
+						<dt>Note: </dt>
+						<dd> {{dernierStage.soutenance.note}} </dd>
+					{% endif %}
+					</dl>
+					<a href="#" class="btn btn-primary" id="modif3">Modifier</a>
+				</div>
+			{% endif %}
+		</div>
+
+	</div>
+
+{% endblock %}
+{% endblock %}
+
+{% block autreScript %}
+	<script type="text/javascript" src="{% static 'js/stage.js' %}"></script>
+{% endblock %}

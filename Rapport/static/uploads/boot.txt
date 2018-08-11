@@ -1,0 +1,4 @@
+lsblk
+cp nom_du_fichier.iso /dev/sdX && sync
+
+X: représente partition à booter.
