@@ -13,10 +13,14 @@ function script(){
 	$('#id_pseudo').popover({delay: {show: 500, hide: 200}, trigger: 'hover'}).on({
 		focusout: verificationPseudo,
 	});
+	displayRightForm();
 	$('#typeProfile').change(displayRightForm);
+	$('#id_ufr').change(chargerDpt);
+	$('#id_dpts').change(chargerFormation);
+	$('#id_niveaux').change(chargerFormation);
 }
 
-function verificationEmail(argument) {
+function verificationEmail() {
 	// body...
 	var email = $('#id_email').val();
 	$.ajax({
@@ -37,7 +41,7 @@ function verificationEmail(argument) {
 	});
 }
 
-function verificationPseudo(argument) {
+function verificationPseudo() {
 	// body...
 	var pseudo = $('#id_pseudo').val();
 	$.ajax({
@@ -62,14 +66,60 @@ function displayRightForm() {
 	// body...
 	if ($('#typeProfile').val() == 'etudiant')
 	{
-		$('#FormEmploye').hide();
+		$('#FormPostulant').hide();
 		$('#FormEtudiant').show();
 	}
-	else
+	else if ($('#typeProfile').val() == 'postulant')
 	{
 		$('#FormEtudiant').hide();
-		$('#FormEmploye').show()
+		$('#FormPostulant').show();
 	}
 }
+
+function chargerDpt() {
+	// body...
+	var ufr = $('#id_ufr').val();
+	$.ajax({
+		url: '../chargerDpt',
+		type: 'GET',
+		data: ({'ufr': ufr}),
+		dataType: 'html',
+		success: function(code_html, statut) {
+			$('#id_dpts').parent().remove();
+			$('#id_ufr').parent().after(code_html);
+			$(document).ready(script);
+		},
+		error: function(resultat, statut, erreur) {
+			
+		},
+		complete: function(resultat, statut) {
+
+		}
+	});
+}
+
+
+function chargerFormation() {
+	// body...
+	var dpt = $('#id_dpts').val();
+	var niveau = $('#id_niveaux').val();
+	$.ajax({
+		url: '../chargerFormation',
+		type: 'GET',
+		data: ({'dpt': dpt, 'niveau': niveau}),
+		dataType: 'html',
+		success: function(code_html, statut) {
+			$('#id_formation').parent().remove();
+			$('#id_niveaux').parent().after(code_html);
+		},
+		error: function(resultat, statut, erreur) {
+			
+		},
+		complete: function(resultat, statut) {
+
+		}
+	});
+}
+
 
 $(document).ready(script);

@@ -7,9 +7,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as logi, logout
 from django.http import HttpResponse
-from Stage.forms import LoginForm, FormEtudiant, FormCompte
-from Rapport.models import Etudiant,  Matiere, Semestre
-from django.forms import EmailField, ValidationError, CharField
+from Stage.forms import LoginForm, FormEtudiant, FormCompte, FormPostulant, FormFormation
+from Rapport.models import Etudiant,  Matiere, Semestre, Departement
+from DepotDoc.models import Postulant, Formation, Dossier
+from django import forms
 
 
 
@@ -19,12 +20,10 @@ def user_form(request):
     if request.user.is_authenticated:
         if len(Etudiant.objects.filter(compte=request.user)) == 1:
             return Etudiant.objects.get(compte=request.user)
-        #elif len(Postulant.objects.filter(id = logged_user_id)) ==1:
-            #return Postulant.objects.get(id = logged_user_id)
-        else:
-            return None
-    else:
+        elif len(Postulant.objects.filter(compte=request.user)) ==1:
+            return Postulant.objects.get(compte=request.user)
         return None
+    return None
 
 
 
@@ -34,27 +33,21 @@ def login(request):
     logged_user = user_form(request)
     if logged_user:
         return redirect('/accueil')
-    if len(request.POST) > 0:
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            user_pseudo = form.cleaned_data['pseudo']
-            user_password = form.cleaned_data['password']
-            user = authenticate(request, username=user_pseudo, password=user_password)
-            if user:
-                if user.is_active:
-                    logi(request, user)
-                    request.session.set_expiry(0)
-                    return redirect('/accueil')
-                else :
-                    return render(request, 'login.html', {'form': form, 'activer': """Ce compte n'est pas encore (ou n'est plus) activer. 
+    form = LoginForm(request.POST or None)
+    if form.is_valid():
+        user_pseudo = form.cleaned_data['pseudo']
+        user_password = form.cleaned_data['password']
+        user = authenticate(request, username=user_pseudo, password=user_password)
+        if user:
+            if user.is_active:
+                logi(request, user)
+                request.session.set_expiry(0)
+                return redirect('/accueil')
+            return render(request, 'login.html', {'form': form, 'activer': """Ce compte n'est pas encore (ou n'est plus) activer. 
                 Veuillez contacter l'admin pour plus d'information."""})
-            else:
-                return render(request, 'login.html', {'form': form, 'activer': "Identifiant et/ou mot de passe incorrecte."})              
-        else:
-            return render(request, 'login.html', {'form': form})
-    else:
-        form = LoginForm()
-        return render(request, 'login.html', {'form': form})
+        return render(request, 'login.html', {'form': form, 'activer': "Identifiant et/ou mot de passe incorrecte."})              
+    return render(request, 'login.html', {'form': form})
+
     
 
 
@@ -62,37 +55,50 @@ def login(request):
 def inscription(request):
     """
     """
-    if ((len(request.POST) > 0) and 'typeProfile' in request.POST):
-        if (request.POST['typeProfile'] == 'etudiant'):
-            etudiant = FormEtudiant(data = request.POST)
-            compte = FormCompte(data = request.POST)
-            if etudiant.is_valid() and compte.is_valid():
-                if request.POST['password'] == request.POST['dPassword']:
-                    user = User.objects.create_user(username=request.POST['pseudo'], email=request.POST['email'], password=request.POST['password'],
+    etudiant = FormEtudiant(request.POST or None)
+    postulant = FormPostulant(request.POST or None)
+    formation = FormFormation(request.POST or None)
+    compte = FormCompte(request.POST or None)
+    
+    if compte.is_valid():
+        if request.POST['password'] == request.POST['dPassword']:
+            if (request.POST['typeProfile'] == 'etudiant') and etudiant.is_valid():
+                user = User.objects.create_user(username=request.POST['pseudo'], email=request.POST['email'], password=request.POST['password'],
                                     is_staff=False, is_active=False)
-                    user.save()
-                    etudiant.instance.email = request.POST['email']
-                    etudiant.instance.compte = user
-                    etudiant.save()
-                    #sujet = "Inscription sur SIDINFOR"
-                    #message = """ """
-                    #email = 'parice02@hotmail.com'
-                    #user.email_user(subject=sujet, message=message, from_email=email)
-                    return render(request, 'login.html', {'activer': """Veuillez patienter jusqu'à l'activation de votre comptre (3 jours).
-                     Si ce n'est pas fait après les 3 jours, veuillez contacter l'admin."""})
-                else:
-                    return render(request, 'inscription.html', {'etudiant': etudiant,
-                                                                'compte': compte, 'erreur': 'Mot de passe non identique'})   
+                etudiant.instance.email = request.POST['email']
+                etudiant.instance.compte = user
+                etudiant.save()
+            elif (request.POST['typeProfile'] == 'postulant') and postulant.is_valid() and formation.is_valid():
+                user = User.objects.create_user(username=request.POST['pseudo'], email=request.POST['email'], password=request.POST['password'],
+                                    is_staff=False, is_active=False)
+                numero = len(Postulant.objects.filter(formation__formation = request.POST['formation'])) + 1
+                numero = str(formater(numero, 3))+str(request.POST['niveaux'][0]).upper()
+                dossier = Dossier(numero = numero, etat_traitement = 'encours')
+                dossier.save()
+                postulant.instance.email = request.POST['email']
+                f = Formation.objects.get(pk = request.POST['formation'])
+                postulant.instance.formation = f
+                postulant.instance.compte = user
+                postulant.instance.dossier = dossier
+                postulant.save()
+            # Code pour envoyer un mail
             else:
-                return render(request, 'inscription.html', {'etudiant': etudiant, 'compte': compte})
+                return render(request, 'inscription.html', {'etudiant': etudiant, 'compte': compte, 'postulant': postulant, 'formation': formation})
+            return render(request, 'login.html', {'activer': """Veuillez patienter jusqu'à l'activation de votre comptre (3 jours).
+                     Si ce n'est pas fait après les 3 jours, veuillez contacter l'admin."""})
         else:
-            pass
-    else:
-        etudiant = FormEtudiant()
-        compte = FormCompte()
-        return render(request, 'inscription.html', {'etudiant': etudiant, 'compte': compte})
+            return render(request, 'inscription.html', {'etudiant': etudiant, 'postulant': postulant, 'formation': formation, 
+                                                                'compte': compte, 'erreur': 'Mot de passe non identique'})   
+    return render(request, 'inscription.html', {'etudiant': etudiant, 'compte': compte, 'postulant': postulant, 'formation': formation})
 
-
+def insc(request):
+    formation = FormFormation(request.POST or None)
+    print(formation)
+    print(request.POST)
+    if formation.is_valid():
+        print('ok')
+        pass
+    return render(request, 'inscription.html', {'formation': formation})
 
 def accueil (request):
     """
@@ -168,12 +174,12 @@ def modifierProfile(request):
 def ajax_email(request):
     """
     """
+    html = ''
     if (request.GET) and ('email' in request.GET):
-        champ = EmailField()
-        html = ''
+        champ = forms.EmailField()
         try:
             champ.clean(request.GET['email'])
-        except ValidationError:
+        except forms.ValidationError:
             html = """<p style='color: red;' class="message"> <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 8 8">
   <path d="M1.41 0l-1.41 1.41.72.72 1.78 1.81-1.78 1.78-.72.69 1.41 1.44.72-.72 1.81-1.81 1.78 1.81.69.72 1.44-1.44-.72-.69-1.81-1.78 1.81-1.81.72-.72-1.44-1.41-.69.72-1.78 1.78-1.81-1.78-.72-.72z" />
 </svg> Ceci n'est pas une adresse électronique </p>"""
@@ -189,7 +195,6 @@ def ajax_email(request):
         finally:
             return HttpResponse(html)  
     else:
-        html = ''
         return HttpResponse(html)
     
     
@@ -197,12 +202,12 @@ def ajax_email(request):
 def ajax_pseudo(request):
     """
     """
+    html = ''
     if (request.GET) and ('pseudo' in request.GET):
-        champ = CharField()
-        html = ''
+        champ = forms.CharField()
         try:
             champ.clean(request.GET['pseudo'])
-        except ValidationError:
+        except forms.ValidationError:
             html = """<p style='color: red;' class="message"> <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 8 8">
   <path d="M1.41 0l-1.41 1.41.72.72 1.78 1.81-1.78 1.78-.72.69 1.41 1.44.72-.72 1.81-1.81 1.78 1.81.69.72 1.44-1.44-.72-.69-1.81-1.78 1.81-1.81.72-.72-1.44-1.41-.69.72-1.78 1.78-1.81-1.78-.72-.72z" />
 </svg> Ceci ne peux être un pseudonyme </p>"""
@@ -218,6 +223,44 @@ def ajax_pseudo(request):
         finally:
             return HttpResponse(html)  
     else:
-        html = ''
         return HttpResponse(html)
     
+    
+    
+def ajax_chargerDpt(request):
+    """
+    """
+    if request.GET and ('ufr' in request.GET):
+        
+        class ChampsDpt(forms.Form):
+            dpts = forms.ModelChoiceField(label = 'Département', queryset= Departement.objects.filter(ufr = request.GET['ufr']), empty_label = '--------')
+        return HttpResponse(str(ChampsDpt().as_p()))
+      
+      
+def ajax_chargerFormation(request):
+    """
+    """
+    if request.GET and ('dpt' in request.GET) and ('niveau' in request.GET):
+        class ChampsFormation(forms.Form):
+            label = ''
+            if request.GET['niveau'] == 'master':
+                label = 'Formation'
+            elif request.GET['niveau'] == 'doctorat':
+                label = 'Spécialité'
+            formation = forms.ModelChoiceField(label = label, queryset=Formation.objects.filter(dpt = request.GET['dpt'], niveau = request.GET['niveau']), empty_label = '--------') 
+        return HttpResponse(str(ChampsFormation().as_p()))
+    
+    
+def formater(entier, val_max = 1):
+    try:
+        entier, val_max = int(entier), int(val_max)
+        if val_max > len(str(entier)):
+            return '0'*(val_max - len(str(entier))) + str(entier)
+        elif val_max == len(str(entier)):
+            return entier
+        else:
+            print("'val_max' doit être plus grand que le nombre de chiffre dans 'entier'")
+    except ValueError:
+        print('Veillez sais un entier positif')
+    except NameError:
+        print('Variable non défini')

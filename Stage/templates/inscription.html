@@ -7,33 +7,59 @@
 {% block contenu %}
 	<h1> Inscription </h1>
 
-	<form>
+	<form >
 		<p>
 			<label for="typeProfile"> S'inscrire en tant que: </label>
-			<select id = "typeProfile">
-				<option value="etudiant" {% if FormEtudiant.is_bound %}
+			<select id = "typeProfile" name="typeProfile">
+				<option value="etudiant" {% if etudiant.is_bound %}
 						selected="selected" {% endif %}> Étudiant </option>
-				<option value="postulant" {% if FormPostulant.is_bound %} 
-						selected="selected" {% endif %}> Postulant en Master  </option>
+				<option value="postulant" {% if postulant.is_bound %} 
+						selected="selected" {% endif %}> Postulant  </option>
 			</select>
 		</p>
 	</form>
 
-	<form action="" method="post">
+	<form action="" method="post" id = "FormEtudiant">
 		{% csrf_token %}
-		<fieldset id = "FormEtudiant">
+		<fieldset>
 			<legend> Information Personnelle </legend>
 			{{etudiant.as_p}}
+		</fieldset>
+
+		<fieldset>
+			<legend> Compte </legend>
+			<p class="errorlist">{{ erreur }}</p>
+			{{compte.as_p}}
+		</fieldset>
+
+		<div class="btn bnt-group">
+			<input type="hidden" value="etudiant", name="typeProfile" />
+			<input type="submit" value="Envoyer" class="btn btn-success btn-link" />
+			<a class="btn btn-danger" href="{% url 'login' %}"> Annuler </a>
+		</div>
+		
+	</form>
+
+	<form action="" method="post" id = "FormPostulant">
+		{% csrf_token %}
+		<fieldset>
+			<legend> Information Personnelle </legend>
+			{{postulant.as_p}}
+		</fieldset>
+
+		<fieldset>
+			<legend> Choix Formation Universitaire </legend>
+			{{formation.as_p}}
 		</fieldset>
 		
 		<fieldset>
 			<legend> Compte </legend>
-			{{ erreur }}
+			<p class="errorlist">{{ erreur }}</p>
 			{{compte.as_p}}
 		</fieldset>
 		
 		<div class="btn bnt-group">
-			<input type="hidden" value="etudiant" name="typeProfile" />
+			<input type="hidden" value="postulant", name="typeProfile" />
 			<input type="submit" value="Envoyer" class="btn btn-success btn-link" />
 			<a class="btn btn-danger" href="{% url 'login' %}"> Annuler </a>
 		</div>
