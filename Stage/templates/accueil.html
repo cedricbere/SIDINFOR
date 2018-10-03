@@ -17,12 +17,33 @@
 {% block info %} 
 <!-- <center class="center"> <h1> Bonjour ici. Ceci est la page d'accueil. </h1> </center> -->
 <p class="container">
-<ul class="nav navbar container my-6">
-	<li> <a class="mr-4 nav-link" href="{% url 'Rapport:depotRapport' %}"> <img src="{% static 'img/bouton/1.jpg' %}" alt="logo_stage" title="Formulaire de stage"/> </a> </li>
-	<li> <a class="mr-4 nav-link" href="{% url 'Rapport:consulterMesRapports' %}"><img src="{% static 'img/bouton/13.jpg' %}" alt="logo_rapport" title="{% if user.niveau.nom_classe == 'Licence 3' %} Rapports {% elif user.niveau.nom_classe == 'Master 2' %} Mémoires {% endif %} de stage"/> </a> </li>
-	<li> <a class="mr-4 nav-link" href="#"> <img src="{% static 'img/bouton/11.jpg' %}" title="Dépôt Master" alt="logo_dépôt"> </a> </li>
-	<li> <a class="mr-4 nav-link" href="#" >Module 4</a> </li>
-</ul>
+	{% if user.type_personne == 'Etudiant' %} 
+	<ul class="nav navbar container my-6">
+		<li> <a class="mr-4 nav-link" href="{% url 'Rapport:depotRapport' %}"> <img src="{% static 'img/bouton/1.jpg' %}" alt="logo_stage" title="Formulaire de stage"/> </a> </li>
+		<li> <a class="mr-4 nav-link" href="{% url 'Rapport:consulterMesRapports' %}"><img src="{% static 'img/bouton/13.jpg' %}" alt="logo_rapport" title="{% if user.niveau.nom_classe == 'Licence 3' %} Rapports {% elif user.niveau.nom_classe == 'Master 2' %} Mémoires {% endif %} de stage"/> </a> </li>
+		<li> <a class="mr-4 nav-link" href="#"> <img src="{% static 'img/bouton/11.jpg' %}" title="Dépôt Master" alt="logo_dépôt"> </a> </li>
+		<li> <a class="mr-4 nav-link" href="#" >Module 4</a> </li>
+	</ul>
+	{% elif user.type_personne == 'Postulant' %}
+	<nav id="#" class="row nav nav-tabs"> 
+		<div class="col-2 col-md-1 col-sm-2 col-lg-2 col-xl-2"> <a href="#" class="nav-item nav-link active" data-toggle="tab" id=""> <center> Identification </center> </a> </div>
+		<div class="col-2 col-md-1 col-sm-2 col-lg-2 col-xl-2"> <a href="#" class="nav-item nav-link" data-toggle="tab" id=""> <center> Coordonnées </center> </a> </div>
+		<div class="col-2 col-md-1 col-sm-2 col-lg-2 col-xl-2"> <a href="#" class="nav-item nav-link" data-toggle="tab" id=""> <center> Formation sollicitées </center> </a>  </div>
+		<div class="col-2 col-md-1 col-sm-2 col-lg-2 col-xl-2"> <a href="#" class="nav-item nav-link" data-toggle="tab" id=""> <center> Cursus Scolaire </center> </a>  </div>
+		<div class="col-2 col-md-1 col-sm-2 col-lg-2 col-xl-2"> <a href="#" class="nav-item nav-link" data-toggle="tab" id=""> <center> Parcours Professionnel </center> </a>  </div>
+		<div class="col-2 col-md-1 col-sm-2 col-lg-2 col-xl-2"> <a href="#" class="nav-item nav-link" data-toggle="tab" id=""> <center> Pièces jointes </center> </a>  </div>
+	</nav>
+	<div class="tab-content">
+		<div class="tab-pane active">
+		</div>
+		<div class="tab-pane">
+		</div>
+		<div class="tab-pane">
+		</div>
+		<div class="tab-pane">
+		</div>
+	</div>
+	{% endif %} 
 </p>
 {% endblock %}
 

@@ -30,28 +30,30 @@
 			<dt>Date de naissance : </dt>
 			<dd> {{user.dateNaissance}} </dd>
 
-			<dt>Matricule : </dt>
-			<dd>{{user.matricule}}</dd>
-
 			<dt>Tél mobile : </dt>
 			<dd>{{user.numTel}}</dd>
-
-			<dt>Faculté : </dt>
-			<dd>{{user.filiere.nom_filiere}} ( {{user.filiere.dpt}} ) </dd>
- 
-			<dt>Niveau : </dt>
-			<dd>{{user.niveau.nom_classe}}</dd>
 
 			<dt>Sexe : </dt>
 			<dd>{{user.sexe}}</dd>
 
 		{% if user.type_personne == 'Etudiant' %}
+			<dt>Faculté : </dt>
+			<dd>{{user.filiere.nom_filiere}} ( {{user.filiere.dpt}} ) </dd>
+ 
+			<dt>Niveau : </dt>
+			<dd>{{user.niveau.nom_classe}}</dd>
+			
+			<dt>Matricule : </dt>
+			<dd>{{user.matricule}}</dd>
+
 			<dt>Année académique : </dt>
 			<dd>{{user.promotion}}</dd>
 		{% endif %}
 			<p class="btn btn-group">
 				<a class="btn btn-primary active mr-5" href="{% url 'modifProfile' %}">Modifier</a>
+				{% if user.type_personne == 'Etudiant' %}
 				<a class="btn btn-secondary ml-5" href="{% url 'Rapport:consulterMesRapports' %}">Voir mes stages</a>
+				{% endif %}
 			</p>
 		</dl>
 	</p>

@@ -16,13 +16,15 @@ Including another URLconf
 
 from django.urls import path, include
 from django.contrib import admin
-from Stage.views import login, inscription, accueil, profile, deconnexion, programmes, modifierProfile, ajax_email, ajax_pseudo
+from Stage.views import login, inscription, accueil, profile, deconnexion, programmes, modifierProfile, ajax_email, ajax_pseudo, ajax_chargerDpt,\
+    ajax_chargerFormation, insc
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('Rapport/', include('Rapport.urls')),
     path('', login),
     path('login/', login, name = 'login'),
+    #path('inscription/', inscription, name = 'inscription'),
     path('inscription/', inscription, name = 'inscription'),
     path('accueil/', accueil, name = 'accueil'),
     path('profile/', profile, name = 'profile'),
@@ -31,4 +33,6 @@ urlpatterns = [
     path('modifierProfile/', modifierProfile, name = 'modifProfile'),
     path('verificationEmail', ajax_email, name = 'verificationEmail'),
     path('verificationPseudo', ajax_pseudo, name = 'verificationPseudo'),
+    path('chargerDpt', ajax_chargerDpt, name = 'chargerDepartement'),
+    path('chargerFormation', ajax_chargerFormation, name = 'chargerFormation'),
 ]

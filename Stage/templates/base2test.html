@@ -44,7 +44,8 @@
       <button class="btn btn-link d-md-none p-0 ml-3" type="button" data-toggle="collapse" data-target="#bd-docs-nav" aria-controls="bd-docs-nav" aria-expanded="false" aria-label="Toggle docs navigation"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 30 30" width="30" height="30" focusable="false"><title>Liens rapides</title><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" d="M4 7h22M4 15h22M4 23h22"/></svg>
       </button>
       <nav class="collapse bd-links" id="bd-docs-nav">
-        <div class="navbar-text">Accés rapide</div>        
+        <div class="navbar-text">Accés rapide</div>
+        {% if user.type_personne == 'Etudiant' %}       
         <div class="bd-toc-item" id="drapport">
           <a class="bd-toc-link" href="#" id="lienRapport"> Rapport </a>
           <ul class="nav bd-sidenav navbar">
@@ -53,6 +54,7 @@
            <li class=""> <a href="{% url 'Rapport:depotRapport' %}"> Ajout un nouveau stage</a> </li> 
           </ul>      
         </div>
+        {% endif %}
 
         <div class="bd-toc-item" id="telecharger">
           <a class="bd-toc-link" href="#" id="lienTelecharger">Télécharger</a>
