@@ -17,11 +17,12 @@ Including another URLconf
 from django.urls import path, include
 from django.contrib import admin
 from Stage.views import login, inscription, accueil, profile, deconnexion, programmes, modifierProfile, ajax_email, ajax_pseudo, ajax_chargerDpt,\
-    ajax_chargerFormation, insc
+    ajax_chargerFormation
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('Rapport/', include('Rapport.urls')),
+    path('DepotDossier/', include('DepotDoc.urls')),
     path('', login),
     path('login/', login, name = 'login'),
     #path('inscription/', inscription, name = 'inscription'),
@@ -31,8 +32,8 @@ urlpatterns = [
     path('deconnexion/', deconnexion, name = 'deconnexion'),
     path('programmes/', programmes, name = 'programmes'),
     path('modifierProfile/', modifierProfile, name = 'modifProfile'),
-    path('verificationEmail', ajax_email, name = 'verificationEmail'),
-    path('verificationPseudo', ajax_pseudo, name = 'verificationPseudo'),
-    path('chargerDpt', ajax_chargerDpt, name = 'chargerDepartement'),
-    path('chargerFormation', ajax_chargerFormation, name = 'chargerFormation'),
+    path('verificationEmail/', ajax_email, name = 'verificationEmail'),
+    path('verificationPseudo/', ajax_pseudo, name = 'verificationPseudo'),
+    path('chargerDpt/', ajax_chargerDpt, name = 'chargerDepartement'),
+    path('chargerFormation/', ajax_chargerFormation, name = 'chargerFormation'),
 ]

@@ -1,0 +1,69 @@
+{% extends "base2test.html" %}
+{% load staticfiles %}
+{% block title %}de formulaire de renseignement{% endblock %}
+{% block bodyId %}rens{% endblock %}
+{% block autreCSS %} <link rel="stylesheet" type="text/css" href="{% static 'css/rens_depot.css' %}"/>
+{% endblock %}
+
+{% block breadcrumb %}
+	<av aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"> <a href="{% url 'accueil' %}">Accueil</a> </li>
+			<li class="breadcrumb-item active"> Renseignement </li>
+		</ol>
+	</nav>
+{% endblock %}
+{% block infoDossier %}
+{% if user.type_personne == 'Postulant' %}
+<div class="row" id="infoDos">
+    <div class="col-4">
+       	<div class="label">Numéro de dossier:</div>
+        <div class="val"> {{user.dossier.numero}} </div>
+    </div>
+    <div class="col-4">
+        <div class="label"> Etat du traitement du dossier: </div>
+        <div class="val" id="etatDos">  {% if user.dossier.etat_traitement == 'encours' %}
+                    Encours de traitement
+                {% elif user.dossier.etat_traitement == 'attente' %}
+                    En attente du remplissage
+                {% else %}
+                    {{user.dossier.etat_traitement}}
+                {% endif %}
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="label">Date d'inscription:</div>
+        <div class="val"> {{user.dossier.date_inscription|date:'r'}} </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block centre %}
+
+	{% block info %}
+	<p class="container">
+		{% if user.type_personne == 'Postulant' %}
+		<nav id="" class="row nav nav-tabs"> 
+			<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3"> <a href="#idContenu" class="nav-item nav-link active" data-toggle="tab" id="id" style="background-color: lightblue;"> <center> Identification </center> </a> </div>
+			<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3"> <a href="#formationContenu" class="nav-item nav-link" data-toggle="tab" id="formation"> <center> Formations sollicitées </center> </a>  </div>
+			<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3"> <a href="#curriculumContenu" class="nav-item nav-link" data-toggle="tab" id="curriculum"> <center> Curriculum </center> </a>  </div>
+			<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3"> <a href="#pieceContenu" class="nav-item nav-link" data-toggle="tab" id="piece"> <center> Pièces jointes </center> </a>  </div>
+		</nav>
+		<div class="tab-content">
+			<div class="tab-pane active" id="idContenu"> <center class="contenuRens"> Contenu ID 
+			</center> </div>
+			<div class="tab-pane" id="formationContenu"> <center class="contenuRens"> Contenu formation
+			</center> </div>
+			<div class="tab-pane" id="curriculumContenu"> <center class="contenuRens"> Contenu curriculum
+			</center> </div>
+			<div class="tab-pane" id="pieceContenu"> <center class="contenuRens"> Contenu pièces jointes
+			</center> </div>
+		</div>
+		{% endif %}
+	</p>
+
+	{% endblock %}
+{% endblock %}
+
+{% block autreScript %} <script type="text/javascript" src="{% static 'js/rens_depot.js' %}"></script> {% endblock %}
