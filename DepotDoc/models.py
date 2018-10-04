@@ -119,7 +119,7 @@ class Dossier(models.Model):
     numero = models.CharField(max_length = 20, primary_key = True)
     date_inscription = models.DateTimeField(auto_now_add=True, null=False)
     date_modif = models.DateTimeField(auto_now=True, null=False)
-    etat_traitement = models.CharField(choices = (('encours', 'Encours'), ('rejete', 'Rejeté'), ('valide', 'Validé')), max_length = 20)
+    etat_traitement = models.CharField(choices = (('attente', ('En attente du remplissage')), ('encours', 'Encours'), ('rejete', 'Rejeté'), ('valide', 'Validé')), max_length = 20)
     
     def __str__(self):
         return self.numero+' - '+self.etat_traitement

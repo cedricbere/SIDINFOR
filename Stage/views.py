@@ -73,7 +73,7 @@ def inscription(request):
                                     is_staff=False, is_active=False)
                 numero = len(Postulant.objects.filter(formation__formation = request.POST['formation'])) + 1
                 numero = str(formater(numero, 3))+str(request.POST['niveaux'][0]).upper()
-                dossier = Dossier(numero = numero, etat_traitement = 'encours')
+                dossier = Dossier(numero = numero, etat_traitement = 'attente')
                 dossier.save()
                 postulant.instance.email = request.POST['email']
                 f = Formation.objects.get(pk = request.POST['formation'])

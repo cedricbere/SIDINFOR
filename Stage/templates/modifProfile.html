@@ -7,7 +7,6 @@
 {% block bodyId %}modif{% endblock %}
 {% block info_user%} {{user.prenom}} {{user.nom}} {% endblock %}
 
-{% block centre %}
 {% block breadcrumb %}
 <nav aria-label="breadcrumb">
 	<ol class="breadcrumb">
@@ -17,6 +16,7 @@
 	</ol>
 </nav>
 {% endblock %}
+{% block centre %}
 
 {% include 'recherche.html' %}
 
