@@ -3,6 +3,10 @@ function script(){
 	$('#id_dateNaissance').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
 	$('#id_numTel').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
 	$('#id_nom').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
+	$('#id_sexe').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
+	$('#id_pays').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
+	$('#id_promotion').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
+	$('#id_filiere').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
 	$('#id_prenom').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
 	$('#id_password').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
 	$('#id_dPassword').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
@@ -13,8 +17,10 @@ function script(){
 	$('#id_pseudo').popover({delay: {show: 500, hide: 200}, trigger: 'hover'}).on({
 		focusout: verificationPseudo,
 	});
+
 	displayRightForm();
 	$('#typeProfile').change(displayRightForm);
+
 	$('#id_ufr').change(chargerDpt);
 	$('#id_dpts').change(chargerFormation);
 	$('#id_niveaux').change(chargerFormation);
@@ -85,8 +91,7 @@ function chargerDpt() {
 		data: ({'ufr': ufr}),
 		dataType: 'html',
 		success: function(code_html, statut) {
-			$('#id_dpts').parent().remove();
-			$('#id_ufr').parent().after(code_html);
+			$('#id_dpts').parent().parent().replaceWith(code_html);
 			$(document).ready(script);
 		},
 		error: function(resultat, statut, erreur) {
@@ -109,8 +114,8 @@ function chargerFormation() {
 		data: ({'dpt': dpt, 'niveau': niveau}),
 		dataType: 'html',
 		success: function(code_html, statut) {
-			$('#id_formation').parent().remove();
-			$('#id_niveaux').parent().after(code_html);
+			$('#id_formation').parent().parent().replaceWith(code_html);
+			//$(document).ready(script);
 		},
 		error: function(resultat, statut, erreur) {
 			

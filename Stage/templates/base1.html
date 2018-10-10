@@ -6,10 +6,11 @@
         <meta name="author" content="Mohamed Zeba">
         <meta name="description" content="">
         <meta name="keywords" content="stage rapport sidinfor">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"> 
         <title> Page - {% block title %}{% endblock %} </title>
         <link rel="icon" type="image/ico" href="{% static 'img/favicon.ico' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.css' %}"/>
+        <script type="text/javascript" src="{% static 'js/jquery-3.3.1.js' %}" crossorigin="anonymous"> </script>
     {% block CSSBase %}
         <link rel="stylesheet" type="text/css" href="{% static 'css/base1.css' %}"/>
     {% endblock %}
@@ -33,7 +34,7 @@
     </div>
 {% block footer %}
 {% endblock %}
-    <script type="text/javascript" src="{% static 'js/jquery-3.3.1.js' %}" crossorigin="anonymous"> </script>
+
 <!--    <script>window.jQuery || document.write('<script type="text/javascript" src="{% static "js/jquery-slim.min.js" %}"><\/script>')</script> -->
     <script type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from Rapport.models import Personne, Departement, UFR
+from django_countries.fields import CountryField
 
 
 # Create your models here.
@@ -9,17 +10,17 @@ from Rapport.models import Personne, Departement, UFR
 
 ####### Information Personnelles #####
 class Postulant (Personne):
-    nationalite = models.CharField("Nationalité", max_length = 100, null = True)
-    ville = models.CharField(max_length = 100, null = True)
-    dateNaissance = models.DateField('Date de Naissance', null=True)
-    lieuNaissance = models.CharField('Lieu de Naissance', max_length = 100, null=True)
-    region = models.CharField("Région / Etat/ Province", max_length = 100, null = True)
-    pays = models.ForeignKey('Pays', on_delete=models.SET_NULL, null = True)
-    codePostal = models.CharField(max_length = 10, null = True)
-    compte = models.OneToOneField(User, on_delete=models.SET_NULL, null = True)
-    formation = models.ForeignKey('Formation', on_delete=models.SET_NULL, null = True)
-    documentId = models.OneToOneField('DocumentId', on_delete=models.SET_NULL, null = True)
-    dossier = models.OneToOneField('Dossier', on_delete=models.SET_NULL, null = True)
+    dateNaissance = models.DateField('Date de naissance', null=True, blank=True)
+    lieuNaissance = models.CharField('Lieu de naissance', max_length = 100, null=True, blank=True)
+    nationalite = models.CharField("Nationalité", max_length = 100, null = True, blank=True)
+    ville = models.CharField(max_length = 100, null = True, blank=True)
+    region = models.CharField("Région / Etat", max_length = 100, null = True, blank=True)
+    pays = CountryField(null=True, blank_label = 'Choisir votre pays')
+    #codePostal = models.CharField('Code postal', max_length = 10, null = True)
+    compte = models.OneToOneField(User, on_delete=models.SET_NULL, null = True, blank=True)
+    formation = models.ForeignKey('Formation', on_delete=models.SET_NULL, null = True, blank=True)
+    documentId = models.OneToOneField('DocumentId', on_delete=models.SET_NULL, null = True, blank=True)
+    dossier = models.OneToOneField('Dossier', on_delete=models.SET_NULL, null = True, blank=True)
     type_personne = 'Postulant'
     
     def __str__(self):
@@ -27,9 +28,9 @@ class Postulant (Personne):
     
     
 class DocumentId(models.Model):
-    carteId, passport = "Carte Nationale d'identité",  "Passport"
-    TYPE = ((carteId, "Carte Nationale d'identité"), (passport, "Passport"))
-    type_doc = models.CharField(choices = TYPE, null = True, max_length = 100, default = passport)
+    carteId, passport, carteRefuge, carteCons = "Carte Nationale d'identité",  "Passport", 'Carte de refugé', 'Carte consulaire'
+    TYPE = ((carteId, "Carte Nationale d'identité"), (passport, "Passport"), (carteRefuge, "Carte de refugé"), (carteCons, 'Carte consulaire'))
+    type_doc = models.CharField(choices = TYPE, null = True, max_length = 100, default = passport, verbose_name = "Type du document")
     numero = models.CharField("Numéro", max_length = 20)
     dateEtablissement = models.DateField("Date d'établissement", null = True)
     dateExpiration = models.DateField("Date d'expiration", null = True)
@@ -39,7 +40,7 @@ class DocumentId(models.Model):
         return self.type_doc+'\t'+self.numero
     
 
-########## Formation ######################
+########## Formation (seul l'admin y a accès) ######################
     
 class Formation(models.Model):
         ufr = models.ForeignKey(UFR, on_delete=models.SET_NULL, null=True)
@@ -48,7 +49,8 @@ class Formation(models.Model):
         formation = models.CharField(max_length = 200, null=False, unique = True)
         
         def __str__(self):
-            return self.niveau+' - '+self.formation
+            return self.formation
+        
     
 ##################  Parours ##################
     
@@ -60,7 +62,7 @@ class Scolaire (models.Model):
     eleve = models.ForeignKey(Postulant, on_delete=models.SET_NULL, null=True)
     
     def __str__(self):
-        return self.classe+' '+self.classe+' '+self.eleve
+        return self.classe+' '+self.annee+' '+self.eleve
     
 class Professionel(models.Model):
     entreprise = models.CharField(max_length = 200)
@@ -109,16 +111,11 @@ class Autre(models.Model):
     
 ################ Autres ###################
 
-class Pays(models.Model):
-    nom_pays = models.CharField('Nom', max_length = 100, null=True)
-    
-    def __str__(self):
-        return self.nom_pays
     
 class Dossier(models.Model):
     numero = models.CharField(max_length = 20, primary_key = True)
-    date_inscription = models.DateTimeField(auto_now_add=True, null=False)
-    date_modif = models.DateTimeField(auto_now=True, null=False)
+    date_inscription = models.DateTimeField(auto_now_add=True, null=False, blank = False)
+    date_modif = models.DateTimeField(auto_now=True, null=False, blank = False)
     etat_traitement = models.CharField(choices = (('attente', ('En attente du remplissage')), ('encours', 'Encours'), ('rejete', 'Rejeté'), ('valide', 'Validé')), max_length = 20)
     
     def __str__(self):

@@ -2,21 +2,48 @@
 function Script() {
 	// body...
 
-	$('#id').on({
-		click: displayID,
+	var onglet1 = new Array($('#idContenu'), $('#id'));
+	var onglet2 = new Array($('#docContenu'), $('#doc'));
+	var onglet3 = new Array($('#formationContenu'), $('#formation'));
+	var onglet4 = new Array($('#curriculumContenu'), $('#curriculum'));
+	var onglet5 = new Array($('#pieceContenu'), $('#piece'));
+
+	colorerOnglet(onglet1);
+	colorerOnglet(onglet2);
+	colorerOnglet(onglet3);
+	colorerOnglet(onglet4);
+	colorerOnglet(onglet5);
+
+	onglet1[1].on({
+		click: function() {
+			displayOnglet(onglet1, [onglet2, onglet3, onglet4, onglet5]);},
 	});
 
-	$('#formation').on({
-		click: displayFormation,
+
+	onglet2[1].on({
+		click: function() {
+			displayOnglet(onglet2, [onglet3, onglet4, onglet5, onglet1]);
+		},
 	});
 
-	$('#curriculum').on({
-		click: displayCurriculum,
+	onglet3[1].on({
+		click: function(){
+			displayOnglet(onglet3, [onglet4, onglet5, onglet1, onglet2]);
+		},
 	});
 
-	$('#piece').on({
-		click: displayPiece,
+	onglet4[1].on({
+		click: function() {
+			displayOnglet(onglet4, [onglet5, onglet1, onglet2, onglet3]);
+		},
 	});
+
+	onglet5[1].on({
+		click: function() {
+			displayOnglet(onglet5, [onglet1, onglet2, onglet3, onglet4]);
+		},
+	});
+
 
 	/*alert($('#etatDos').text() == "En attente du remplissage");
 
@@ -38,64 +65,37 @@ function Script() {
 	}*/
 }
 
-function displayID() {
+
+function displayOnglet(visible, invisible) {
 	// body...
-	$('#idContenu').show().addClass('active');
-	$('#id').addClass('active').css({'background-color': 'lightblue'});
+	visible[0].show().addClass('active');
+	visible[1].addClass('active');
 
-	$('#formationContenu').hide().removeClass('active');
-	$('#formation').removeClass('active').css({'background-color': 'white'});
-
-	$('#curriculumContenu').hide().removeClass('active');
-	$('#curriculum').removeClass('active').css({'background-color': 'white'});
-
-	$('#pieceContenu').hide().removeClass('active');
-	$('#piece').removeClass('active').css({'background-color': 'white'});
+	for (var i = 0; i < invisible.length; i++) {
+		invisible[i][0].hide().removeClass('active');
+		invisible[i][1].removeClass('active');
+	}
 }
 
-function displayFormation() {
+function parcoursContenuOnglet(arg) {
 	// body...
-	$('#formationContenu').show().addClass('active');
-	$('#formation').addClass('active').css({'background-color': 'lightblue'});
-
-	$('#idContenu').hide().removeClass('active');
-	$('#id').removeClass('active').css({'background-color': 'white'});
-
-	$('#curriculumContenu').hide().removeClass('active');
-	$('#curriculum').removeClass('active').css({'background-color': 'white'});
-
-	$('#pieceContenu').hide().removeClass('active');
-	$('#piece').removeClass('active').css({'background-color': 'white'});
+	arg.children('input').each(function(){
+		if ($(this).val() == null)
+		{
+			return false;
+		}
+	return true;
+});
 }
 
-function displayCurriculum() {
+function colorerOnglet(onglet) {
 	// body...
-	$('#curriculumContenu').show().addClass('active');
-	$('#curriculum').addClass('active').css({'background-color': 'lightblue'});
-
-	$('#idContenu').hide().removeClass('active');
-	$('#id').removeClass('active').css({'background-color': 'white'});
-
-	$('#formationContenu').hide().removeClass('active');
-	$('#formation').removeClass('active').css({'background-color': 'white'});
-
-	$('#pieceContenu').hide().removeClass('active');
-	$('#piece').removeClass('active').css({'background-color': 'white'});
-}
-
-function displayPiece() {
-	// body...
-	$('#pieceContenu').show().addClass('active');
-	$('#piece').addClass('active').css({'background-color': 'lightblue'});
-
-	$('#formationContenu').hide().removeClass('active');
-	$('#formation').removeClass('active').css({'background-color': 'white'});
-
-	$('#idContenu').hide().removeClass('active');
-	$('#id').removeClass('active').css({'background-color': 'white'});
-
-	$('#curriculumContenu').hide().removeClass('active');
-	$('#curriculum').removeClass('active').css({'background-color': 'white'});
+	var bool = parcoursContenuOnglet(onglet[0]);
+	if (bool)
+		onglet[1].css({'background-color': 'green'});
+	else
+		onglet[1].css({'background-color': 'orange'});
 }
 
 $('document').ready(Script);
+

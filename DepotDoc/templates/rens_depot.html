@@ -1,12 +1,21 @@
 {% extends "base2test.html" %}
 {% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_field %}
+{% load countries %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
 {% block title %}de formulaire de renseignement{% endblock %}
 {% block bodyId %}rens{% endblock %}
 {% block autreCSS %} <link rel="stylesheet" type="text/css" href="{% static 'css/rens_depot.css' %}"/>
+{{ postulant.media }}
+{{ document.media }}
+{{ formation.media }}
 {% endblock %}
 
 {% block breadcrumb %}
-	<av aria-label="breadcrumb">
+	<nav aria-label="breadcrumb">
 		<ol class="breadcrumb">
 			<li class="breadcrumb-item"> <a href="{% url 'accueil' %}">Accueil</a> </li>
 			<li class="breadcrumb-item active"> Renseignement </li>
@@ -16,11 +25,11 @@
 {% block infoDossier %}
 {% if user.type_personne == 'Postulant' %}
 <div class="row" id="infoDos">
-    <div class="col-4">
+    <div class="col-3">
        	<div class="label">Numéro de dossier:</div>
         <div class="val"> {{user.dossier.numero}} </div>
     </div>
-    <div class="col-4">
+    <div class="col-3">
         <div class="label"> Etat du traitement du dossier: </div>
         <div class="val" id="etatDos">  {% if user.dossier.etat_traitement == 'encours' %}
                     Encours de traitement
@@ -31,9 +40,13 @@
                 {% endif %}
         </div>
     </div>
-    <div class="col-4">
+    <div class="col-3">
         <div class="label">Date d'inscription:</div>
         <div class="val"> {{user.dossier.date_inscription|date:'r'}} </div>
+    </div>
+    <div class="col-3">
+        <div class="label">Nationalité:</div>
+        <div class="val"> {{user.pays.name}} <img src="{{user.pays.flag}}">  </div>
     </div>
 </div>
 {% endif %}
@@ -45,19 +58,38 @@
 	<p class="container">
 		{% if user.type_personne == 'Postulant' %}
 		<nav id="" class="row nav nav-tabs"> 
-			<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3"> <a href="#idContenu" class="nav-item nav-link active" data-toggle="tab" id="id" style="background-color: lightblue;"> <center> Identification </center> </a> </div>
+			<div class="col-2 col-md-2 col-sm-2 col-lg-2 col-xl-2"> <a href="#idContenu" class="nav-item nav-link active" data-toggle="tab" id="id" > <center> Identification </center> </a> </div>
+			<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3"> <a href="#docContenu" class="nav-item nav-link" data-toggle="tab" id="doc" > <center> Document d'identité </center> </a> </div>
 			<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3"> <a href="#formationContenu" class="nav-item nav-link" data-toggle="tab" id="formation"> <center> Formations sollicitées </center> </a>  </div>
-			<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3"> <a href="#curriculumContenu" class="nav-item nav-link" data-toggle="tab" id="curriculum"> <center> Curriculum </center> </a>  </div>
-			<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3"> <a href="#pieceContenu" class="nav-item nav-link" data-toggle="tab" id="piece"> <center> Pièces jointes </center> </a>  </div>
+			<div class="col-2 col-md-2 col-sm-2 col-lg-2 col-xl-2"> <a href="#curriculumContenu" class="nav-item nav-link" data-toggle="tab" id="curriculum"> <center> Curriculum </center> </a>  </div>
+			<div class="col-2 col-md-2 col-sm-2 col-lg-2 col-xl-2"> <a href="#pieceContenu" class="nav-item nav-link" data-toggle="tab" id="piece"> <center> Pièces jointes </center> </a>  </div>
 		</nav>
 		<div class="tab-content">
-			<div class="tab-pane active" id="idContenu"> <center class="contenuRens"> Contenu ID 
+			<div class="tab-pane active" id="idContenu"> <center class="container contenuRens">
+				<div>
+					<p>Remplissez tous les champs. Toutes les informations doivent être juste.</p>
+				</div>	
+				{% crispy postulant %}
 			</center> </div>
-			<div class="tab-pane" id="formationContenu"> <center class="contenuRens"> Contenu formation
+			<div class="tab-pane" id="docContenu"> <center class="container contenuRens">
+				<div>
+					<p>Entrez les informations sur votre document d'identification.</p>
+				</div>	
+				{% crispy document %}
 			</center> </div>
-			<div class="tab-pane" id="curriculumContenu"> <center class="contenuRens"> Contenu curriculum
+			<div class="tab-pane" id="formationContenu"> <center class="container contenuRens">
+				<div>
+					<p>Vous pouvez changer votre choix autant de fois que vous voudriez avant la date limite.</p>
+				</div>
+				<form method="post" action="">
+					{% csrf_token %}
+					{% crispy formation %}
+					<input type="submit" name="submit" value="Sauvergarder" class="btn btn-primary" id="submit-id-submit" />
+				</form>	
 			</center> </div>
-			<div class="tab-pane" id="pieceContenu"> <center class="contenuRens"> Contenu pièces jointes
+			<div class="tab-pane" id="curriculumContenu"> <center class="container contenuRens"> Contenu curriculum
+			</center> </div>
+			<div class="tab-pane" id="pieceContenu"> <center class="container contenuRens"> Contenu pièces jointes
 			</center> </div>
 		</div>
 		{% endif %}
@@ -66,4 +98,7 @@
 	{% endblock %}
 {% endblock %}
 
-{% block autreScript %} <script type="text/javascript" src="{% static 'js/rens_depot.js' %}"></script> {% endblock %}
+{% block autreScript %}
+<script type="text/javascript" src="{% static 'js/rens_depot.js' %}"></script>
+<!-- <script type="text/javascript" src="{% static 'js/inscription.js' %}"></script> -->
+{% endblock %}

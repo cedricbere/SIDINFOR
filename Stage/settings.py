@@ -37,6 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bootstrap_datepicker_plus',
+    'bootstrap4',
+    'crispy_forms',
+    'django_countries',
     'Rapport',
     'DepotDoc',
 ]
@@ -138,7 +142,14 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'Rapport/static'),
     os.path.join(BASE_DIR, 'Stage/static'),
+    os.path.join(BASE_DIR, 'DepotDoc/static'),
     ]
 
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'Rapport/static')
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+BOOTSTRAP4 = {
+'include_jquery': True,
+}

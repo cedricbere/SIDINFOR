@@ -18,15 +18,16 @@
 {% block info %} 
 <!-- <center class="center"> <h1> Bonjour ici. Ceci est la page d'accueil. </h1> </center> -->
 <p class="container">
+	<center class="center">
 	<ul class="nav navbar container my-6">
 		{% if user.type_personne == 'Etudiant' %} 
 		<li> <a class="mr-4 nav-link" href="{% url 'Rapport:depotRapport' %}"> <img src="{% static 'img/bouton/1.jpg' %}" alt="logo_stage" title="Formulaire de stage"/> </a> </li>
 		<li> <a class="mr-4 nav-link" href="{% url 'Rapport:consulterMesRapports' %}"><img src="{% static 'img/bouton/13.jpg' %}" alt="logo_rapport" title="{% if user.niveau.nom_classe == 'Licence 3' %} Rapports {% elif user.niveau.nom_classe == 'Master 2' %} Mémoires {% endif %} de stage"/> </a> </li>
 		{% endif %} 
-		<li> <a class="mr-4 nav-link" href="{% if user.type_personne == 'Postulant' %} {% url 'DepotDoc:renseignement' %} {% endif %}"> <img src="{% static 'img/bouton/11.jpg' %}" title="Dépôt Master" alt="logo_dépôt"> </a> </li>
+		<li> <a class="mr-4 nav-link" href="{% if user.type_personne == 'Postulant' %} {% url 'DepotDoc:renseignement' %} {% else %} # {% endif %}"> <img src="{% static 'img/bouton/11.jpg' %}" title="Dépôt Master" alt="logo_dépôt"> </a> </li>
 		<li> <a class="mr-4 nav-link" href="#" >Module 4</a> </li>
 	</ul>
-	
+	</center>
 </p>
 {% endblock %}
 
