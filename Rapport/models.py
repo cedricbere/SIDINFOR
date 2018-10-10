@@ -7,10 +7,10 @@ class Personne (models.Model):
     id = models.AutoField(primary_key = True)
     nom = models.CharField("Nom", max_length = 30)
     prenom = models.CharField("Prénom", max_length = 30)
-    numTel = models.CharField("Téléphone", max_length = 25, unique = True, null = True)
     Homme,Femme = 'Homme', 'Femme'
     SEXE = ((Homme, 'Homme'), (Femme, 'Femme'))
     sexe = models.CharField(choices = SEXE, max_length = 5, default = Homme, null = False)
+    numTel = models.CharField("Téléphone", max_length = 25, unique = True, null = True, blank=True)
     type_personne = ''
     
     def __str__(self):
@@ -66,7 +66,7 @@ class Departement(models.Model):
     ufr = models.ForeignKey(UFR, null = True, on_delete = models.SET_NULL)
     
     def __str__(self):
-        return self.ufr.__str__()+' - '+self.nom_dpt
+        return self.nom_dpt
     
     
     
@@ -75,7 +75,7 @@ class Filiere(models.Model):
     dpt = models.ForeignKey(Departement, null = True, on_delete = models.SET_NULL)
     
     def __str__(self):
-        return self.dpt.__str__()+' - '+self.nom_filiere
+        return self.nom_filiere
     
     
     

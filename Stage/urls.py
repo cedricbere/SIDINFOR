@@ -25,7 +25,6 @@ urlpatterns = [
     path('DepotDossier/', include('DepotDoc.urls')),
     path('', login),
     path('login/', login, name = 'login'),
-    #path('inscription/', inscription, name = 'inscription'),
     path('inscription/', inscription, name = 'inscription'),
     path('accueil/', accueil, name = 'accueil'),
     path('profile/', profile, name = 'profile'),

@@ -7,10 +7,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as logi, logout
 from django.http import HttpResponse
-from Stage.forms import LoginForm, FormEtudiant, FormCompte, FormPostulant, FormFormation
+from Stage.forms import LoginForm, FormEtudiant, FormCompte, FormPostulant
 from Rapport.models import Etudiant,  Matiere, Semestre, Departement
-from DepotDoc.models import Postulant, Formation, Dossier
+from DepotDoc.models import Postulant, Formation
 from django import forms
+from DepotDoc.forms import FormRensPostulant, FormFormation, FormDossier
+from crispy_forms.helper import FormHelper
+from crispy_forms.utils import render_crispy_form
+from Stage.outils import formater
 
 
 
@@ -64,41 +68,35 @@ def inscription(request):
         if request.POST['password'] == request.POST['dPassword']:
             if (request.POST['typeProfile'] == 'etudiant') and etudiant.is_valid():
                 user = User.objects.create_user(username=request.POST['pseudo'], email=request.POST['email'], password=request.POST['password'],
-                                    is_staff=False, is_active=False)
+                                   is_staff=False, is_active=False)
                 etudiant.instance.email = request.POST['email']
                 etudiant.instance.compte = user
                 etudiant.save()
             elif (request.POST['typeProfile'] == 'postulant') and postulant.is_valid() and formation.is_valid():
                 user = User.objects.create_user(username=request.POST['pseudo'], email=request.POST['email'], password=request.POST['password'],
                                     is_staff=False, is_active=False)
-                numero = len(Postulant.objects.filter(formation__formation = request.POST['formation'])) + 1
+                numero = len(Postulant.objects.filter(formation__niveau = request.POST['niveaux'])) + 1
                 numero = str(formater(numero, 3))+str(request.POST['niveaux'][0]).upper()
-                dossier = Dossier(numero = numero, etat_traitement = 'attente')
-                dossier.save()
+                dataDos = {'numero': numero, 'etat_traitement': 'attente'}
+                dossier = FormDossier(data = dataDos)
+                if dossier.is_valid():
+                    dossier.save()
                 postulant.instance.email = request.POST['email']
                 f = Formation.objects.get(pk = request.POST['formation'])
                 postulant.instance.formation = f
                 postulant.instance.compte = user
-                postulant.instance.dossier = dossier
+                postulant.instance.dossier = dossier.instance
                 postulant.save()
             # Code pour envoyer un mail
             else:
                 return render(request, 'inscription.html', {'etudiant': etudiant, 'compte': compte, 'postulant': postulant, 'formation': formation})
             return render(request, 'login.html', {'activer': """Veuillez patienter jusqu'à l'activation de votre comptre (3 jours).
-                     Si ce n'est pas fait après les 3 jours, veuillez contacter l'admin."""})
+                     Si ce n'est pas fait après les 3 jours, veuillez contacter l'admin.""", 'form': LoginForm()})
         else:
             return render(request, 'inscription.html', {'etudiant': etudiant, 'postulant': postulant, 'formation': formation, 
                                                                 'compte': compte, 'erreur': 'Mot de passe non identique'})   
     return render(request, 'inscription.html', {'etudiant': etudiant, 'compte': compte, 'postulant': postulant, 'formation': formation})
-
-def insc(request):
-    formation = FormFormation(request.POST or None)
-    print(formation)
-    print(request.POST)
-    if formation.is_valid():
-        print('ok')
-        pass
-    return render(request, 'inscription.html', {'formation': formation})
+    
 
 def accueil (request):
     """
@@ -149,25 +147,17 @@ def modifierProfile(request):
     """
     logged_user = user_form(request)
     if logged_user:
-        if request.POST and len(request.POST) > 0:
-            if type(logged_user) == Etudiant:
-                form = FormEtudiant(data=request.POST, instance = logged_user)
-            else:
-                pass
-            
-            if form.is_valid():
-                form.save()
-                return redirect('/profile')
-            else:
-                return render(request, 'modifProfile.html', {'user': logged_user, 'form': form})
-        else:
-            if type(logged_user) == Etudiant:
-                form = FormEtudiant(instance = logged_user)                
-            else:
-                pass
-            return render(request, 'modifProfile.html', {'user': logged_user, 'form': form,})                
-    else:
-        return redirect('/login')
+        personne = ''
+        if type(logged_user) == Etudiant:
+            personne = FormEtudiant(data = request.POST or None, instance = logged_user)
+        elif type(logged_user) == Postulant:
+            personne = FormRensPostulant(data = request.POST or None, instance = logged_user)
+        if request.POST and personne.is_valid():
+            if personne.has_changed():
+                personne.save()
+            return redirect('/profile')
+        return render(request, 'modifProfile.html', {'user': logged_user, 'form': personne})
+    return redirect('/login')
     
    
     
@@ -233,8 +223,19 @@ def ajax_chargerDpt(request):
     if request.GET and ('ufr' in request.GET):
         
         class ChampsDpt(forms.Form):
-            dpts = forms.ModelChoiceField(label = 'Département', queryset= Departement.objects.filter(ufr = request.GET['ufr']), empty_label = '--------')
-        return HttpResponse(str(ChampsDpt().as_p()))
+            dpts = forms.ModelChoiceField(label = 'Département', queryset= Departement.objects.filter(ufr = request.GET['ufr'] or None), empty_label = '--------')
+        
+            def __init__(self, *args, **kwargs):
+                super(ChampsDpt, self).__init__(*args, **kwargs)
+                self.helper = FormHelper()
+                self.helper.form_tag = False
+                self.helper.disable_csrf = True
+                self.helper.include_media = False
+                self.helper.form_class ='form-horizontal'
+                self.helper.label_class = 'col-md-4'
+                self.helper.field_class = 'col-md-8'
+        
+        return HttpResponse(render_crispy_form(ChampsDpt()))
       
       
 def ajax_chargerFormation(request):
@@ -247,20 +248,19 @@ def ajax_chargerFormation(request):
                 label = 'Formation'
             elif request.GET['niveau'] == 'doctorat':
                 label = 'Spécialité'
-            formation = forms.ModelChoiceField(label = label, queryset=Formation.objects.filter(dpt = request.GET['dpt'], niveau = request.GET['niveau']), empty_label = '--------') 
-        return HttpResponse(str(ChampsFormation().as_p()))
+            formation = forms.ModelChoiceField(label = label, queryset=Formation.objects.filter(dpt = request.GET['dpt'] or None, niveau = request.GET['niveau'] or None), empty_label = '--------') 
+            
+            def __init__(self, *args, **kwargs):
+                super(ChampsFormation, self).__init__(*args, **kwargs)
+                self.helper = FormHelper()
+                self.helper.form_tag = False
+                self.helper.disable_csrf = True
+                self.helper.include_media = False
+                self.helper.form_class ='form-horizontal'
+                self.helper.label_class = 'col-4'
+                self.helper.field_class = 'col-8'
+        
+        return HttpResponse(render_crispy_form(ChampsFormation()))
     
-    
-def formater(entier, val_max = 1):
-    try:
-        entier, val_max = int(entier), int(val_max)
-        if val_max > len(str(entier)):
-            return '0'*(val_max - len(str(entier))) + str(entier)
-        elif val_max == len(str(entier)):
-            return entier
-        else:
-            print("'val_max' doit être plus grand que le nombre de chiffre dans 'entier'")
-    except ValueError:
-        print('Veillez sais un entier positif')
-    except NameError:
-        print('Variable non défini')
+
+

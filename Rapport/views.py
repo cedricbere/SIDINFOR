@@ -4,6 +4,7 @@ from django.db.models import Q
 from Rapport.forms import FormRapport, FormStage, FormSoutenance
 from Rapport.models import Stage, Rapport, Soutenance
 from Stage.views import user_form
+from Stage.outils import nettoyage
 
 
 # Create your views here.
@@ -216,30 +217,5 @@ def resultats(request):
                     return render(request, 'resultats.html', {'user': logged_user, 'stages': stages})
     else:
         return redirect('/login')
-    
-    
-
-
-def nettoyage(chaine = ''):
-    """
-    """
-    try:
-        str(chaine)
-        ponctuation = (',', '.', ';', '!', '?', '&', '-', '_', '(', ')', '=', '"', '*', '#', '<', '>', '/', ':', '\\', '|', '[', ']', '{', '}',"'")
-        newChaine = ''
-        for car in chaine :
-            if car in ponctuation:
-                newChaine += ' '
-            else:
-                newChaine += car
-        liste = []
-        for mot in newChaine.split(' '):
-            if mot != '':
-                liste.append(mot)
-        return liste
-    except:
-        return None
- 
-    
-    
+        
     

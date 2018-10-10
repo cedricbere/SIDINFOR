@@ -76,7 +76,7 @@
       <div class="bd-toc-item" id="dossier">
         <a class="bd-toc-link" href="#" id="lienDossier">Dossier</a>
         <ul class="nav bd-sidenav navbar" >
-          <li class="" id="lien4"> <a href="#"> Mon dossier </a> </li>
+          <li class="" id="lien4"> <a href="{% if user.type_personne == 'Postulant' %} {% url 'DepotDoc:renseignement' %} {%endif%}"> Mon dossier </a> </li>
         </ul>   
       </div>
 

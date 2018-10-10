@@ -24,14 +24,13 @@
 
 <center class="center"> <h1>Modifier votre profile</h1> </center>
 
-<p class="container">
-<form method="post" action="" class="container">
-	{% csrf_token %}
-	{{form.as_p}}
-	<input type="submit" value="Modifier"/>
-	<a class ="btn btn-danger" href="{% url 'profile' %}"> Annuler </a>
-</form>
-
-</p>
+<center class="container">
+	<form method="post" action="" class="form-group row container">
+		{% csrf_token %}
+		{{form.as_p}}
+		<input type="submit" value="Modifier"/>
+		<a class ="btn btn-danger" href="{% url 'profile' %}"> Annuler </a>
+	</form>
+</center>
 {% endblock %}
 {% endblock %}
