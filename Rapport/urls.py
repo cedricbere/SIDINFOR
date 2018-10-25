@@ -5,17 +5,13 @@ Created on 22 mai 2018
 '''
 
 from django.urls import path
-from Rapport.views import rapportStage, consulterMesRapports, consulterLesRapports, ajax_modifStage, ajax_modifRapport,\
-    ajax_modifSoutenance, ajax_recherche, resultats
+from Rapport.views import consulterMesRapports, consulterLesRapports, ajax_recherche, resultats, rens_rapport
 
 app_name = 'Rapport'
 urlpatterns = [
-    path('depotRapport/', rapportStage, name = 'depotRapport'),
+    path('depotRapport/', rens_rapport, name = 'depotRapport'),
     path('mesRapports/', consulterMesRapports, name = 'consulterMesRapports'),
     path('lesRapports/', consulterLesRapports, name = 'consulterLesRapports'),
-    path('modificationStage/', ajax_modifStage, name = 'modificationStage'),
-    path('modificationRapport/', ajax_modifRapport, name = 'modificationRapport'),
-    path('modificationSoutenance/', ajax_modifSoutenance, name = 'modificationSoutenance'),
     path('recherche/', ajax_recherche, name = 'recherche'),
     path('resultats', resultats, name = 'resultats'),
 ]

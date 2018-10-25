@@ -7,7 +7,6 @@
 {% bootstrap_javascript jquery='full' %}
 {% block title %}Inscription{% endblock %}
 {% block autreCSS%} {{etudiant.media}}
-{{postulant.media}} 
  {% endblock %}
 {% block bodyId %}inscription{% endblock %}
 
@@ -31,11 +30,11 @@
 		{% crispy etudiant %}
 
 		<p class="errorlist">{{ erreur }}</p>
-		{% crispy compte %}
+		{% crispy compteEtudiant %}
 
 		<div class="row">
 			<input type="hidden" value="etudiant" name="typeProfile" />
-			<input type="submit" value="Envoyer" class="btn btn-success btn-link col-3 float-left" />
+			<input type="submit" value="Envoyer" name="envoieEtud" id="envoieEtud" class="btn btn-success btn-link col-3 float-left" />
 			<div class="offset-6"></div>
 			<a class="btn btn-danger float-right col-3" href="{% url 'login' %}"> Annuler </a>
 		</div>
@@ -48,11 +47,11 @@
 		
 		{% crispy formation %}
 		<p class="errorlist">{{ erreur }}</p>
-		{% crispy compte %}
+		{% crispy comptePostulant %}
 		
 		<div class="row">
 			<input type="hidden" value="postulant" name="typeProfile" />
-			<input type="submit" value="Envoyer" class="btn btn-success btn-link col-3 float-left" />
+			<input type="submit" value="Envoyer" name="envoiePost" id="envoiePost" class="btn btn-success btn-link col-3 float-left" />
 			<div class="offset-6"></div>
 			<a class="btn btn-danger float-right col-3" href="{% url 'login' %}"> Annuler </a>
 		</div>

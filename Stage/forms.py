@@ -7,7 +7,7 @@ Created on 10 mai 2018
 from django import forms
 from Rapport.models import Etudiant
 from DepotDoc.models import Postulant
-from crispy_forms.layout import Layout, Submit, HTML, Column, Fieldset, Div
+from crispy_forms.layout import Layout, Submit, HTML, Column, Div
 from bootstrap_datepicker_plus import DatePickerInput
 from crispy_forms.helper import FormHelper
 
@@ -20,16 +20,15 @@ class LoginForm(forms.Form):
     password = forms.CharField(label = 'Mot de passe', widget = forms.PasswordInput(attrs={
         'data-toggle': 'popover', 'data-content': 'Veuillez saisir votre mot de passe.',
         'placeholder': 'Mot de passe',
-        'class': 'form-control'})) 
+        'class': 'form-control',})) 
     
-    def __init__(self, *args, **kwargs):
-        super(LoginForm, self).__init__(*args, **kwargs)
-        
-        self.helper = FormHelper()
-        self.helper.form_show_labels = False
-        self.helper.include_media = False
-        self.helper.form_class = 'form-signin'
-        self.helper.layout = Layout(
+    @property
+    def helper(self):
+        helper = FormHelper()
+        helper.form_show_labels = False
+        helper.include_media = False
+        helper.form_class = 'form-signin'
+        helper.layout = Layout(
                 'pseudo',
                 'password',
             Column(
@@ -37,6 +36,7 @@ class LoginForm(forms.Form):
                  HTML("<a href='%s' class='btn btn-secondary float-right'> %s </a>" % ("{% url 'inscription' %}","S'inscrire")),
                  ),           
             )
+        return helper
         
     
     def clean(self):
@@ -51,27 +51,28 @@ class LoginForm(forms.Form):
     
 class FormEtudiant(forms.ModelForm):
     
-    def __init__(self, *args, **kwargs):
-        super(FormEtudiant, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_tag = False
-        self.helper.disable_csrf = True
-        self.helper.include_media = False
-        self.helper.form_class ='form-horizontal'
-        self.helper.label_class = 'col-4'
-        self.helper.field_class = 'col-8'
-        self.helper.layout = Layout(
+    @property
+    def helper(self):
+        helper = FormHelper()
+        helper.form_tag = False
+        helper.disable_csrf = True
+        helper.include_media = False
+        helper.form_class ='form-horizontal'
+        helper.label_class = 'col-4'
+        helper.field_class = 'col-8'
+        helper.layout = Layout(
             Div(
             'nom', 'prenom', 'sexe', 'dateNaissance', 'niveau', 'filiere', 'promotion', 'matricule'),           
             )
-        
+        return helper
         
         
     class Meta:
         model = Etudiant
         exclude = ('id', 'compte', 'email','numTel')
         widgets = {
-            'dateNaissance': DatePickerInput(attrs={'data-toggle': 'popover', 'data-content': 'Veuillez entrer votre date de naissance.'}),
+            'dateNaissance': DatePickerInput(options={'format': 'DD/MM/YYYY'},
+                attrs={'data-toggle': 'popover', 'data-content': 'Veuillez entrer votre date de naissance.'}),
             #'dateNaissance': forms.DateInput(attrs={'type': 'date', 'data-toggle': 'popover', 'data-content': 'Veuillez saisir votre date de naissance.', }),
             'nom': forms.TextInput(attrs={'placeholder': 'votre nom','data-toggle': 'popover', 'data-content':'Veuillez saisir votre nom de famille.', }),
             'prenom': forms.TextInput(attrs={'placeholder': 'votre prénom', 'data-toggle': 'popover', 'data-content':'Veuillez saisir votre (vos) prénom(s).', }),
@@ -94,22 +95,24 @@ class FormEtudiant(forms.ModelForm):
 
 class FormPostulant(forms.ModelForm):
     
-    def __init__(self, *args, **kwargs):
-        super(FormPostulant, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.disable_csrf = True
-        self.helper.form_tag = False
-        self.helper.include_media = False
-        self.helper.form_class ='form-horizontal'
-        self.helper.label_class = 'col-4'
-        self.helper.field_class = 'col-8'
+    @property
+    def helper(self):
+        helper = FormHelper()
+        helper.disable_csrf = True
+        helper.form_tag = False
+        helper.include_media = False
+        helper.form_class ='form-horizontal'
+        helper.label_class = 'col-4'
+        helper.field_class = 'col-8'
+        return helper
         
         
     class Meta:
         model = Postulant
         fields = ('nom', 'prenom', 'sexe', 'dateNaissance', 'pays')
         widgets = {
-            'dateNaissance': DatePickerInput(attrs={'data-toggle': 'popover', 'data-content': 'Veuillez entrer votre date de naissance.'}),
+            'dateNaissance': DatePickerInput(options={'format': 'DD/MM/YYYY'},
+                attrs={'data-toggle': 'popover', 'data-content': 'Veuillez entrer votre date de naissance.'}),
             #'dateNaissance': forms.DateInput(attrs={'type': 'date', 'data-toggle': 'popover', 'data-content': 'Veuillez saisir votre date de naissance.'}),
             'nom': forms.TextInput(attrs={'placeholder': 'votre nom', 'data-toggle': 'popover', 'data-content':'Veuillez saisir votre nom de famille.',}),
             'prenom': forms.TextInput(attrs={'placeholder': 'votre prénom', 'data-toggle': 'popover', 'data-content':'Veuillez saisir votre (vos) prénom(s).',}),            
@@ -141,15 +144,16 @@ class FormCompte(forms.Form):
         'data-toggle': 'popover', 'data-content': 'Veuillez re-saisir votre mot de passe.',
         'placeholder': 'confirmez votre mot de passe'}))
     
-    def __init__(self, *args, **kwargs):
-        super(FormCompte, self).__init__(*args, *kwargs)
-        self.helper = FormHelper()
-        self.helper.disable_csrf = True
-        self.helper.form_tag = False
-        self.helper.include_media = False
-        self.helper.form_class ='form-horizontal'
-        self.helper.label_class = 'col-4'
-        self.helper.field_class = 'col-8'
+    @property
+    def helper(self):
+        helper = FormHelper()
+        helper.disable_csrf = True
+        helper.form_tag = False
+        helper.include_media = False
+        helper.form_class ='form-horizontal'
+        helper.label_class = 'col-4'
+        helper.field_class = 'col-8'
+        return helper
     
     
     
@@ -157,6 +161,8 @@ class FormCompte(forms.Form):
         cleaned_data = super(FormCompte, self).clean()
         
         if cleaned_data:
+            if cleaned_data['password'] != cleaned_data['dPassword']:
+                raise forms.ValidationError("Les mots de passe sont different.") 
             return cleaned_data
         else:
             raise forms.ValidationError("Veuillez vérifier les information saisies.")

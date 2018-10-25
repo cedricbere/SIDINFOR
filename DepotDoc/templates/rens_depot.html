@@ -10,8 +10,6 @@
 {% block bodyId %}rens{% endblock %}
 {% block autreCSS %} <link rel="stylesheet" type="text/css" href="{% static 'css/rens_depot.css' %}"/>
 {{ postulant.media }}
-{{ document.media }}
-{{ formation.media }}
 {% endblock %}
 
 {% block breadcrumb %}
@@ -84,6 +82,7 @@
 				<form method="post" action="">
 					{% csrf_token %}
 					{% crispy formation %}
+					<input type="hidden" name="type_form" value="formation"/>
 					<input type="submit" name="submit" value="Sauvergarder" class="btn btn-primary" id="submit-id-submit" />
 				</form>	
 			</center> </div>

@@ -10,6 +10,7 @@ class Personne (models.Model):
     Homme,Femme = 'Homme', 'Femme'
     SEXE = ((Homme, 'Homme'), (Femme, 'Femme'))
     sexe = models.CharField(choices = SEXE, max_length = 5, default = Homme, null = False)
+    dateNaissance = models.DateField("Date de Naissance", null = True, blank=True)
     numTel = models.CharField("Téléphone", max_length = 25, unique = True, null = True, blank=True)
     type_personne = ''
     
@@ -40,7 +41,6 @@ class Promotion(models.Model):
     
     
 class Etudiant(Personne):
-    dateNaissance = models.DateField("Date de Naissance", null = False)
     niveau = models.ForeignKey(Classe, default = None, null = True, on_delete = models.SET_NULL)
     filiere = models.ForeignKey('Filiere', verbose_name = "Filière", default = None, null = True, on_delete = models.SET_NULL)
     matricule = models.CharField(max_length = 10, unique = True)
@@ -98,7 +98,7 @@ class Stage(models.Model):
     etat = models.CharField("État", choices = Etat, max_length = 20)
     superviseur = models.ForeignKey(Supersiveur, null = True, on_delete = models.SET_NULL)
     maitreStage = models.ForeignKey(MaitreStage, verbose_name = "Maître de Stage", null = True, on_delete = models.SET_NULL)
-    stagiaire = models.ForeignKey(Etudiant, null=True, on_delete=models.SET_NULL)
+    stagiaire = models.ForeignKey(Etudiant, null=True, on_delete=models.SET_NULL, blank=True)
     
     def __str__(self):
         return 'Stage: '+self.stagiaire.niveau.nom_classe+' '+self.lieu
@@ -113,8 +113,8 @@ class Rapport(models.Model):
     dateEnvoi = models.DateTimeField(auto_now_add = True)
     dateModif = models.DateTimeField(auto_now = True)
     anneeAcademique = models.ForeignKey(Promotion, verbose_name="Année académique", on_delete=models.SET_NULL, null=True)
-    auteur = models.ForeignKey(Etudiant, null = True, on_delete = models.SET_NULL)
-    stage = models.OneToOneField(Stage, on_delete = models.SET_NULL, null=True)
+    auteur = models.ForeignKey(Etudiant, null = True, on_delete = models.SET_NULL, blank=True)
+    stage = models.OneToOneField(Stage, on_delete = models.SET_NULL, null=True, blank=True)
     
     def __str__(self):
         return 'Rapport: '+self.theme[:30]
@@ -130,9 +130,9 @@ class Soutenance(models.Model):
     note = models.IntegerField(null = True)
     jury = models.CharField(max_length = 200, null = True)
     pv = models.CharField("Procès verbal", max_length = 200, null = True)
-    rapport = models.OneToOneField(Rapport, null=True, on_delete = models.SET_NULL)
-    stage = models.OneToOneField(Stage, null=True, on_delete=models.SET_NULL)
-    etudiant = models.ForeignKey(Etudiant, null=True, on_delete=models.SET_NULL)
+    rapport = models.OneToOneField(Rapport, null=True, on_delete = models.SET_NULL, blank=True)
+    stage = models.OneToOneField(Stage, null=True, on_delete=models.SET_NULL, blank=True)
+    etudiant = models.ForeignKey(Etudiant, null=True, on_delete=models.SET_NULL, blank=True)
     
     def __str__(self):
         return 'Soutenance: '+self.etudiant.__str__()+' '+str(self.datePrevu)+' '+self.salle

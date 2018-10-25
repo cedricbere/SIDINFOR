@@ -11,8 +11,10 @@ function Script() {
 	colorerOnglet(onglet1);
 	colorerOnglet(onglet2);
 	colorerOnglet(onglet3);
-	colorerOnglet(onglet4);
-	colorerOnglet(onglet5);
+	/*colorerOnglet(onglet4);
+	colorerOnglet(onglet5);*/
+
+	//parcours(onglet3[0]);
 
 	onglet1[1].on({
 		click: function() {
@@ -79,22 +81,40 @@ function displayOnglet(visible, invisible) {
 
 function parcoursContenuOnglet(arg) {
 	// body...
-	arg.children('input').each(function(){
-		if ($(this).val() == null)
+	var bool = true;
+	arg.find('input, select').not('input:submit, input[type=hidden], input:reset').each(function(){
+		if (!$(this).val())
 		{
+			bool = false;
 			return false;
 		}
-	return true;
 });
+	if (bool)
+		return true;
+	else
+		return false
 }
+
+/*
+function parcours(arg) {
+	// body...
+	arg.find('input, select').not('input[type=hidden], input:submit').each(function(){
+		if ($(this).val())
+		{
+			//console.log('il ya une valeur nulle');
+			//return false;
+			console.log($(this).val())
+		}
+});
+}*/
 
 function colorerOnglet(onglet) {
 	// body...
 	var bool = parcoursContenuOnglet(onglet[0]);
 	if (bool)
-		onglet[1].css({'background-color': 'green'});
+		onglet[1].css({'background-color': '#adff2f'});
 	else
-		onglet[1].css({'background-color': 'orange'});
+		onglet[1].css({'background-color': '#ffd700'});
 }
 
 $('document').ready(Script);

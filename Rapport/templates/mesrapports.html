@@ -41,7 +41,7 @@
 
 					<dt>État d'avancement: </dt>
 					<dd> {{stage.etat}} </dd>
-				{% if stage.soutenance.rapport %}
+				{% if stage.rapport %}
 					<dt>Thème: </dt>
 					<dd> {{stage.soutenance.rapport.theme}} </dd>
 
@@ -49,13 +49,13 @@
 					<dd> {{stage.soutenance.rapport.motsCle}} </dd>
 
 					<dt>Résumé: </dt>
-					<dd> {{stage.soutenance.rapport.resume|truncatewords:100}} </dd>
+					<dd> {{stage.soutenance.rapport.resume}} </dd>
 
 					<dt> Date de chargement du rapport: </dt>
-					<dd> {{stage.soutenance.rapport.dateEnvoi}} </dd>
+					<dd> {{stage.soutenance.rapport.dateEnvoi|date:"l, d F Y"}} </dd>
 
 					<dt>Date de dernière modification: </dt>
-					<dd> {{stage.soutenance.rapport.dateModif}} </dd>
+					<dd> {{stage.soutenance.rapport.dateModif|date:"l, d F Y H:i:s"}} </dd>
 
 					<dt> Rapport uploadé: </dt>
 					<dd>  <a href="" download="fichier"> Télécharger </a> </dd>
@@ -64,13 +64,13 @@
 				{% endif %}
 				{% if stage.soutenance %}
 					<dt>Date de Soutenance: </dt>
-					<dd>{% if not stage.soutenance.dateEffective %} {{stage.soutenance.datePrevu}} {% else %} {{stage.soutenance.dateEffective}} {% endif %}</dd>
+					<dd>{% if not stage.soutenance.dateEffective %} {{stage.soutenance.datePrevu|date:"l, d F Y"}} {% else %} {{stage.soutenance.dateEffective|date:"l, d F Y"}} {% endif %}</dd>
 
 					<dt>Salle: </dt>
 					<dd> {{stage.soutenance.salle}}</dd>
 
 					<dt> Heure: </dt>
-					<dd> {{stage.soutenance.heure}} </dd>
+					<dd> {{stage.soutenance.heure|time:"H:i:s"}} </dd>
 				{% else %}
 					<p> Vous n'avez pas encore sauvegardé de rapport pour ce stage</p>
 				{% endif %}

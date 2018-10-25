@@ -10,35 +10,56 @@ function script(){
 	$('#id_prenom').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
 	$('#id_password').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
 	$('#id_dPassword').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
-	$('#id_email').popover({delay: {show: 500, hide: 200}, trigger: 'hover'}).on({
-		focusout: verificationEmail,
+	$('#id_etud-email').popover({delay: {show: 500, hide: 200}, trigger: 'hover'}).on({
+		focusout: function() {
+			verificationEmailPseudo([$('#id_etud-email'), 'Email']);
+		} ,
+	});
+	$('#id_post-email').popover({delay: {show: 500, hide: 200}, trigger: 'hover'}).on({
+		focusout: function() {
+			verificationEmailPseudo([$('#id_post-email'), 'Email']);
+		} ,
 	});
 	$('#id_matricule').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
-	$('#id_pseudo').popover({delay: {show: 500, hide: 200}, trigger: 'hover'}).on({
-		focusout: verificationPseudo,
+	$('#id_etud-pseudo').popover({delay: {show: 500, hide: 200}, trigger: 'hover'}).on({
+		focusout: function() {
+			verificationEmailPseudo([$('#id_etud-pseudo'), 'Pseudo']);
+		} ,
 	});
+	$('#id_post-pseudo').popover({delay: {show: 500, hide: 200}, trigger: 'hover'}).on({
+		focusout: function() {
+			verificationEmailPseudo([$('#id_post-pseudo'), 'Pseudo']);
+		} ,
+	});
+
+	$('#FormEtudiant').on({
+		submit: function() {
+			console.log('ok');
+			//$('#FormPostulant').remove();
+		},
+	})
 
 	displayRightForm();
 	$('#typeProfile').change(displayRightForm);
-
 	$('#id_ufr').change(chargerDpt);
 	$('#id_dpts').change(chargerFormation);
 	$('#id_niveaux').change(chargerFormation);
 }
 
-function verificationEmail() {
+function verificationEmailPseudo(donnee) {
 	// body...
-	var email = $('#id_email').val();
+	var valeur = donnee[0].val();
 	$.ajax({
-		url: '../verificationEmail',
+		url: '../verification'+donnee[1],
 		type: 'GET',
-		data: ({'email': email}),
+		data: ({'valeur': valeur}),
 		dataType: 'html',
 		success: function(code_html, statut) {
-			$('#id_email').parent().prev('p.message').remove();
-			$('#id_email').parent().before(code_html);
+			donnee[0].parent().parent().prev('p.message').remove();
+			donnee[0].parent().parent().before(code_html);
 		},
 		error: function(resultat, statut, erreur) {
+			console.log(erreur);
 			
 		},
 		complete: function(resultat, statut) {
@@ -47,26 +68,6 @@ function verificationEmail() {
 	});
 }
 
-function verificationPseudo() {
-	// body...
-	var pseudo = $('#id_pseudo').val();
-	$.ajax({
-		url: '../verificationPseudo',
-		type: 'GET',
-		data: ({'pseudo': pseudo}),
-		dataType: 'html',
-		success: function(code_html, statut) {
-			$('#id_pseudo').parent().prev('p.message').remove();
-			$('#id_pseudo').parent().before(code_html);
-		},
-		error: function(resultat, statut, erreur) {
-			
-		},
-		complete: function(resultat, statut) {
-
-		}
-	});
-}
 
 function displayRightForm() {
 	// body...

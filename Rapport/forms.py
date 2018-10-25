@@ -6,6 +6,43 @@ Created on 22 mai 2018
 
 from django import forms
 from Rapport.models import Rapport, Stage, Soutenance
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Layout, Reset, Hidden
+from bootstrap_datepicker_plus import DatePickerInput, TimePickerInput
+
+
+class FormStage(forms.ModelForm):
+    
+    class Meta:
+        model = Stage
+        exclude = ('stagiaire',)
+        widgets = {
+            'lieu': forms.TextInput(attrs={'placeholder': ''}),
+            'dateDebut': DatePickerInput(options = {'format': 'DD/MM/YYYY'},
+                        attrs={'placeholder': ''}),
+            }
+        
+    @property   
+    def helper(self):
+        helper = FormHelper()
+        helper.include_media = False
+        helper.form_class ='form-horizontal'
+        helper.label_class = 'col-4'
+        helper.field_class = 'col-8'
+        helper.layout = Layout(
+            'lieu', 'etat', 'dateDebut', 'superviseur', 'maitreStage',
+            Hidden('type_form', 'form_stage'),
+            Submit('submit', 'Sauvegarder'),
+            Reset('reset', 'Tout effacer'))
+        return helper
+    
+    def clean(self):
+        cleaned_data = super(FormStage, self).clean()
+        if cleaned_data:
+            return cleaned_data
+        else:
+            raise forms.ValidationError('Veuillez vérifier les information saisies.', code = 'invalid')
+
 
 
 class FormRapport(forms.ModelForm):
@@ -19,11 +56,19 @@ class FormRapport(forms.ModelForm):
             'motsCle': forms.TextInput(attrs={'placeholder': '--- mots clés liés au thème ---'})
             }
         
-    def __init__(self, auteur , *args, **kwargs):
-        super(FormRapport, self).__init__(*args, **kwargs)
-        self.instance.auteur = auteur
-        self.instance.anneeAcademique = auteur.promotion
-        self.fields['stage'].queryset = Stage.objects.filter(stagiaire = self.instance.auteur).exclude(etat = 'Fini')
+    @property
+    def helper(self):
+        helper = FormHelper()
+        helper.include_media = False
+        helper.form_class ='form-horizontal'
+        helper.label_class = 'col-4'
+        helper.field_class = 'col-8'
+        helper.layout = Layout(
+            'theme', 'resume', 'motsCle', 'fichier',
+            Hidden('type_form', 'form_rapport'),
+            Submit('submit', 'Sauvegarder'),
+            Reset('reset', 'Tout effacer'))
+        return helper
         
         
     def clean(self):
@@ -32,30 +77,8 @@ class FormRapport(forms.ModelForm):
         if cleaned_data:
             return cleaned_data
         else:
-            raise forms.ValidationError("Veuillez vérifier les information saisies.")
+            raise forms.ValidationError("Veuillez vérifier les information saisies.", code = 'invalid')
               
-                        
-
-class FormStage(forms.ModelForm):
-    
-    class Meta:
-        model = Stage
-        exclude = ('stagiaire',)
-        widgets = {
-            'dateDebut': forms.DateInput(attrs={'type': 'date',},),
-            }
-        
-    def __init__(self, stagiaire, *args, **kwargs):
-        super(FormStage, self).__init__(*args, **kwargs)
-        self.instance.stagiaire = stagiaire
-    
-    def clean(self):
-        cleaned_data = super(FormStage, self).clean()
-        if cleaned_data:
-            return cleaned_data
-        else:
-            raise forms.ValidationError('Veuillez vérifier les information saisies.', code = 'invalid')
-        
         
         
 class FormSoutenance(forms.ModelForm):
@@ -64,21 +87,30 @@ class FormSoutenance(forms.ModelForm):
         model = Soutenance
         exclude = ('jury', 'pv', 'etudiant', 'note')
         widgets = {
-            'datePrevu': forms.DateInput(attrs = {'type': 'date',}),
-            'dateEffective': forms.DateInput(attrs = {'type': 'date',}),
-            'heure': forms.TimeInput(attrs = {'type': 'time',}),}
+            'datePrevu': DatePickerInput(options = {'format': 'DD/MM/YYYY'}),
+            'dateEffective': DatePickerInput(options = {'format': 'DD/MM/YYYY'}),
+            'heure': TimePickerInput(),
+            }
         
-    def __init__(self, etudiant, *args, **kwargs):
-        super(FormSoutenance, self).__init__(*args, **kwargs)
-        self.instance.etudiant = etudiant
-        self.fields['stage'].queryset = Stage.objects.filter(stagiaire = self.instance.etudiant)
-        self.fields['rapport'].queryset = Rapport.objects.filter(auteur = self.instance.etudiant)
-        
-        
+    @property   
+    def helper(self):
+        helper = FormHelper()
+        helper.include_media = False
+        helper.form_class ='form-horizontal'
+        helper.label_class = 'col-4'
+        helper.field_class = 'col-8'
+        helper.layout = Layout(
+            'datePrevu', 'dateEffective', 'salle', 'heure',
+            Hidden('type_form', 'form_soutenance'),
+            Submit('submit', 'Sauvegarder'),
+            Reset('reset', 'Tout effacer'))
+        return helper
+    
+    
     def clean(self):
         cleaned_data = super(FormSoutenance, self).clean()
         
         if cleaned_data:
             return cleaned_data
         else:
-            raise forms.ValidationError("Veuillez vérifier les information saisies.")
+            raise forms.ValidationError("Veuillez vérifier les information saisies.", code = 'invalid')
