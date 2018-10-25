@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
 from django.db.models import Q
 from Rapport.forms import FormRapport, FormStage, FormSoutenance
 from Rapport.models import Stage, Rapport, Soutenance
@@ -9,94 +8,64 @@ from Stage.outils import nettoyage
 
 # Create your views here.
 
-def rapportStage(request):
+def rens_rapport(request):
     """
         Vue permettant de gérer les formulaire d'un stage, d'un rapport de stage et d'une soutenance ainsi que leur modification respective.
-        Les modifications sont sauvegardées dans la base par cette vue mais les formulaires sont affichés par d'autres vues ajax
-        (ajax_modificatin...)
+        Les modifications sont sauvegardées dans la base par cette même vue.
     """
+    
     logged_user = user_form(request)
-    if logged_user:
-        dernierStage = Stage.objects.filter(stagiaire = logged_user).exclude(etat = 'Fini')
-        if dernierStage:
-            valeur = dernierStage[0]
-        else:
-            valeur = None
-        
-        if len(request.GET) == 0 and len(request.POST) == 0:
-            stage = FormStage(stagiaire=logged_user)
-            rapport = FormRapport(auteur=logged_user)
-            soutenance = FormSoutenance(etudiant=logged_user)                
-            return render(request, 'stage.html', {'stage': stage, 'rapport': rapport,
-                            'soutenance': soutenance, 'user': logged_user, 'dernierStage': valeur,})   
-        else:
-            if ('modification' in request.GET) or ('modification' in request.POST):
-                if len(request.GET) > 0 or len(request.POST) > 0:
-                    if (request.GET) and (request.GET['type'] == 'stage'):
-                        form = FormStage(data=request.GET, stagiaire=logged_user, instance=valeur)
-                        if form.is_valid():
-                            form.save()
-                        return redirect('/Rapport/depotRapport')
-                    elif (request.POST) and (request.POST['type'] == 'rapport'):
-                        rapport = Rapport.objects.filter(auteur=logged_user, stage=valeur)[0]
-                        form = FormRapport(data=request.POST, files=request.FILES, auteur=logged_user, instance=rapport)
-                        if form.is_valid():
-                            form.save()
-                        return redirect('/Rapport/depotRapport')
-                    elif (request.GET) and (request.GET['type'] == 'soutenance'):
-                        rapport = Rapport.objects.filter(auteur=logged_user, stage=valeur)[0]
-                        soutenance = Soutenance.objects.filter(etudiant=logged_user, stage=stage, rapport=rapport)[0]
-                        form = FormSoutenance(data=request.GET, etudiant=logged_user, instance=soutenance)
-                        if form.is_valid():
-                            form.save()
-                        return redirect('/Rapport/depotRapport')
-            else:
-                if len(request.GET) > 0 or len(request.POST) >0:
-                    if (request.GET) and (request.GET['type'] == 'stage'):
-                        stage = FormStage(data=request.GET, stagiaire=logged_user)
-                        if stage.is_valid():
-                            stage.instance.stagiaire.save()
-                            stage.save()
-                            return redirect('/Rapport/depotRapport')
-                        else:
-                            stage = FormStage(data=request.GET, stagiaire=logged_user)
-                            rapport = FormRapport(auteur=logged_user)
-                            soutenance = FormSoutenance(etudiant=logged_user)
-                            return render(request, 'stage.html', {'stage': stage, 'rapport': rapport,
-                            'soutenance': soutenance, 'user': logged_user, 'dernierStage': valeur,})
-                            
-                    elif (request.POST) and (request.POST['type'] == 'rapport'):
-                        rapport = FormRapport(data = request.POST, files = request.FILES, auteur=logged_user)        
-                        if rapport.is_valid():
-                            rapport.instance.auteur.save()
-                            rapport.instance.anneeAcademique.save()
-                            rapport.save()
-                            return redirect('/Rapport/depotRapport')
-                        else:
-                            stage = FormStage(stagiaire=logged_user)
-                            rapport = FormRapport(data=request.POST, files=request.FILES, auteur=logged_user)
-                            soutenance = FormSoutenance(etudiant=logged_user)
-                            return render(request, 'stage.html', {'stage': stage, 'rapport': rapport,
-                                'soutenance': soutenance, 'user': logged_user,'dernierStage': valeur,})
-                            
-                    elif (request.GET) and (request.GET['type'] == 'soutenance'):
-                        soutenance = FormSoutenance(data = request.GET, etudiant=logged_user)
-                        if soutenance.is_valid():
-                            soutenance.instance.etudiant.save()
-                            soutenance.save()
-                            return redirect('/Rapport/depotRapport')
-                        else:
-                            stage = FormStage(stagiaire=logged_user)
-                            rapport = FormRapport(auteur=logged_user)
-                            soutenance = FormSoutenance(data=request.GET, etudiant=logged_user)
-                            return render(request, 'stage.html', {'stage': stage, 'rapport': rapport,
-                                'soutenance': soutenance, 'user': logged_user,'dernierStage': valeur,})                    
-    else:
+    if not logged_user:
         return redirect('/login')
+    try:
+        stage = Stage.objects.get(stagiaire = logged_user)#.exclude(etat = 'Fini')
+    except Exception:
+        stage = None
+        
+    try:
+        rapport = Rapport.objects.get(stage = stage)
+    except Exception:
+        rapport = None
+        
+    try:
+        soutenance = Soutenance.objects.get(rapport = rapport)
+    except Exception:
+        soutenance = None
+        
+    formStage = FormStage(data = request.POST if request.POST and (request.POST['type_form'] == 'form_stage') else None, instance = stage)
+    formRapport = FormRapport(data = request.POST if request.POST and (request.POST['type_form'] == 'form_rapport') else None,
+       files = request.FILES if request.POST and (request.POST['type_form'] == 'form_rapport') else None, instance = rapport)
+    formSoutenance = FormSoutenance(data = request.POST if request.POST and (request.POST['type_form'] == 'form_soutenance') else None,
+                                    instance = soutenance)
+    
+    if request.POST and (request.POST['type_form'] == 'form_stage'):
+        if formStage.has_changed() and formStage.is_valid():
+            formStage.save()
+            formStage.instance.stagiaire = logged_user
+            return redirect('/accueil')
+    elif request.POST and (request.POST['type_form'] == 'form_rapport'):
+        if formRapport.has_changed() and formRapport.is_valid():
+            if stage is not None:
+                formRapport.instance.auteur = logged_user
+                formRapport.instance.anneeAcademique = logged_user.promotion
+                formRapport.instance.stage = stage
+                formRapport.save()
+                return redirect('/accueil')
+            else:
+                pass
+    elif request.POST and (request.POST['type_form'] == 'form_soutenance'):
+        if formSoutenance.has_changed() and formSoutenance.is_valid():
+            if (stage is not None) and (rapport is not None):
+                formSoutenance.instance.etudiant = logged_user
+                formSoutenance.instance.rapport = rapport
+                formSoutenance.instance.stage = stage
+                formSoutenance.save()
+                return redirect('/accueil')
+            else:
+                pass
+    return render(request, 'stage.html', {'stage': formStage, 'rapport': formRapport, 'soutenance': formSoutenance, 'user': logged_user,})    
     
     
-    
-
 def consulterMesRapports(request):
     """
         Vue affichant l'ensemble des stages (finis et encours) sauvegardés par l'instance étudiant encours.
@@ -123,61 +92,6 @@ def consulterLesRapports(request):
         return redirect('/login')
     
     
-def ajax_modifStage(request):
-    """
-    """
-    logged_user = user_form(request)
-    if logged_user:
-        stage = Stage.objects.filter(stagiaire = logged_user).exclude(etat = 'Fini')[0]
-        formStage = FormStage(instance = stage, stagiaire=logged_user).as_p()
-        html = """<form method="get" action="" class="container">"""
-        html += str(formStage)
-        html += """
-            <input type="submit" value="Enregistrer" class="btn btn-secondary"/>
-            <input type="hidden" name="type" value="stage" />
-            <input type="hidden" name="modification" value="modification"/>
-            <a href="#" class="btn btn-danger" id="ann1">Annuler</a>
-            </form>
-        """
-        return HttpResponse(html)
-    else:
-        return redirect('/login')
-    
-
-def ajax_modifRapport(request):
-    """
-    """
-    logged_user = user_form(request)
-    if logged_user:
-        stage = Stage.objects.filter(stagiaire = logged_user).exclude(etat = 'Fini')[0]
-        rapport = Rapport.objects.filter(stage=stage, auteur=logged_user)[0]
-        formRapport = FormRapport(instance = rapport, auteur=logged_user).as_p()
-        return render(request, 'modifR.html', {'form': formRapport})
-    else:
-        return redirect('/login')
-
-
-def ajax_modifSoutenance(request):
-    """
-    """
-    logged_user = user_form(request)
-    if logged_user:
-        stage = Stage.objects.filter(stagiaire = logged_user).exclude(etat = 'Fini')[0]
-        rapport = Rapport.objects.filter(stage=stage, auteur=logged_user)[0]
-        soutenance = Soutenance.objects.filter(etudiant=logged_user, stage=stage, rapport=rapport)[0]
-        formSoutenance = FormSoutenance(instance = soutenance, etudiant=logged_user).as_p()
-        html = """<form method="get" action="" class="container">"""
-        html += str(formSoutenance)
-        html += """
-            <input type="submit" value="Enregistrer" class="btn btn-secondary"/>
-            <input type="hidden" name="type" value="soutenance" />
-            <input type="hidden" name="modification" value="modification"/>
-            <a href="#" class="btn btn-danger" id="ann3">Annuler</a>
-            </form
-        """
-        return HttpResponse(html)
-    else:
-        return redirect('/login')
 
 def ajax_recherche(request):
     """

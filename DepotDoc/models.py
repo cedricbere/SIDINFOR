@@ -10,7 +10,6 @@ from django_countries.fields import CountryField
 
 ####### Information Personnelles #####
 class Postulant (Personne):
-    dateNaissance = models.DateField('Date de naissance', null=True, blank=True)
     lieuNaissance = models.CharField('Lieu de naissance', max_length = 100, null=True, blank=True)
     nationalite = models.CharField("Nationalité", max_length = 100, null = True, blank=True)
     ville = models.CharField(max_length = 100, null = True, blank=True)
@@ -28,13 +27,15 @@ class Postulant (Personne):
     
     
 class DocumentId(models.Model):
-    carteId, passport, carteRefuge, carteCons = "Carte Nationale d'identité",  "Passport", 'Carte de refugé', 'Carte consulaire'
-    TYPE = ((carteId, "Carte Nationale d'identité"), (passport, "Passport"), (carteRefuge, "Carte de refugé"), (carteCons, 'Carte consulaire'))
-    type_doc = models.CharField(choices = TYPE, null = True, max_length = 100, default = passport, verbose_name = "Type du document")
-    numero = models.CharField("Numéro", max_length = 20)
-    dateEtablissement = models.DateField("Date d'établissement", null = True)
-    dateExpiration = models.DateField("Date d'expiration", null = True)
-    lieuEtablissement = models.CharField("Lieu d'établissement", max_length = 100, null = True)
+    carteId, passport, carteRefuge, carteCons, autre = "Carte nationale d'identité",  "Passport", 'Carte de refugé', 'Carte consulaire', 'Autre'
+    TYPE = ((carteId, "Carte nationale d'identité"), (passport, "Passport"), (carteRefuge, "Carte de refugé"),
+            (carteCons, 'Carte consulaire'), (autre, 'Autre'))
+    type_doc = models.CharField(choices = TYPE, null = True, max_length = 100, verbose_name = "Type du document")
+    numero_doc = models.CharField("Numéro du document", max_length = 20, null=True, blank=True)
+    lieuEtablissement = models.CharField("Lieu d'établissement", max_length = 100, null = True, blank=True)
+    dateEtablissement = models.DateField("Date d'établissement", null = True, blank=True)
+    dateExpiration = models.DateField("Date d'expiration", null = True, blank=True)
+    
     
     def __str__(self):
         return self.type_doc+'\t'+self.numero
@@ -69,6 +70,7 @@ class Professionel(models.Model):
     poste = models.CharField(max_length = 200)
     periode = models.CharField(max_length = 12)
     employe = models.ForeignKey(Postulant, on_delete=models.SET_NULL, null=True)
+    attestation_travail = models.OneToOneField('AttestationTravail', on_delete=models.SET_NULL, null=True, blank = True)
    
     def __str__(self):
         return self.entreprise+' '+self.employe+' '+self.periode
@@ -83,7 +85,7 @@ class Universitaire(models.Model):
     etudiant = models.ForeignKey(Postulant, on_delete=models.SET_NULL, null=True)
     
     def __str__(self):
-        return self.formation+' '+self.mention+' '+self.etudiant
+        return self.formation+' '+self.mention
     
     
     
@@ -95,15 +97,17 @@ class Stage(models.Model):
     duree = models.IntegerField('Durée')
     theme = models.CharField('Thème', max_length = 200)
     stagiaire = models.ForeignKey(Postulant, on_delete=models.SET_NULL, null=True)
+    attestation_stage = models.OneToOneField('AttestationStage', on_delete=models.SET_NULL, null=True, blank = True)
     
     def __str__(self):
-        return self.structure+' '+self.duree+' '+self.stagiaire
+        return self.structure+' '+self.duree
     
 class Autre(models.Model):
     type = models.CharField(max_length = 100)
     duree = models.IntegerField('Durée')
     structure = models.CharField(max_length = 100)
     employe = models.ForeignKey(Postulant, on_delete=models.SET_NULL, null=True)
+    attestation = models.OneToOneField('AttestationAutre', on_delete=models.SET_NULL, null=True, blank = True)
     
     def __str__(self):
         return self.structure+' '+self.duree+' '+self.employe
@@ -120,3 +124,29 @@ class Dossier(models.Model):
     
     def __str__(self):
         return self.numero+' - '+self.etat_traitement
+    
+    
+class Fichiers(models.Model):
+    photoId = models.ImageField("Photo d'identité", null=True)
+    carteId = models.ImageField("Carte d'identité", null=True)
+    passportId = models.ImageField("Possport", null=True)
+    curriculum = models.FileField("Curriculum Vitae, (daté et signé)", null=True)
+    diplomeEtud = models.ImageField("Diplôme d'étude secondaire", null=True)
+    attestation_licence = models.FileField('Attestation de Licence', null=True)
+
+############## Attestations ########################   
+    
+class AttestationTravail(models.Model):
+    nom_AtTra = models.CharField(max_length=100, null=True, blank=True)
+    attestation_travail = models.FileField("Attestation de travail", null=True)
+    
+class AttestationStage(models.Model):
+    nom_AtSta = models.CharField(max_length=100, null=True, blank=True)
+    attestation_stage = models.FileField("Attestation de stage", null=True)
+    
+    
+class AttestationAutre(models.Model):
+    nom_AtAu = models.CharField(max_length=100, null=True, blank=True)
+    attestation_autre = models.FileField("Attestation pour autre activité", null=True)
+    
+    

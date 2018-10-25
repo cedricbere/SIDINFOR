@@ -19,6 +19,7 @@ from django.contrib import admin
 from Stage.views import login, inscription, accueil, profile, deconnexion, programmes, modifierProfile, ajax_email, ajax_pseudo, ajax_chargerDpt,\
     ajax_chargerFormation
 
+#app_name = 'Stage'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('Rapport/', include('Rapport.urls')),
