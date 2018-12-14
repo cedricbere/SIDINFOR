@@ -1,0 +1,70 @@
+{% extends "base2test.html" %}
+{% load staticfiles %}
+{% block title %}Résultats des recherches{% endblock %}
+{% block bodyId %}resultats{% endblock %}
+{% block autreCSS %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/liste_table.css' %}"/> 
+{% endblock %}
+
+{% block centre %}
+<!--
+	{% block breadcrumb %}
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"> <a href="{% url 'accueil' %}">Accueil</a></li>
+			<li class="breadcrumb-item active"> Résultats des recherches </li>
+		</ol>
+	</nav>
+	{% endblock %} -->
+	{% include 'recherche.html' %}
+
+	{% block info %}
+	{% if stages %}
+		<center class="center"> <h1> Résultats de la recherche </h1> </center>
+	{% endif %}
+	{% for stage in stages %}
+		<table border="1">
+			<tr> <th> Stage Numéro  </th> </tr>
+			<tr> <td>
+				<dl>
+					<dt> Auteur: </dt>
+					<dd>{{stage.stagiaire.prenom|capfirst}} {{stage.stagiaire.nom|capfirst}} </dd>
+
+					<dt> Maître de stage: </dt>
+					<dd>{{stage.maitreStage|capfirst}} </dd>
+
+					<dt> Superviseur: </dt>
+					<dd>{{stage.superviseur|capfirst}} </dd>
+
+					<dt> Lieu: </dt>
+					<dd>{{stage.lieu}} </dd>
+
+					<dt>Thème: </dt>
+					<dd> {{stage.rapport.theme}} </dd>
+
+					<dt>Résumé: </dt>
+					<dd> {{stage.rapport.resume}} </dd>
+
+					<dt>Mots clés: </dt>
+					<dd> {{stage.rapport.motsCle}} </dd>					
+
+					<dt> Rapport uploadé: </dt>
+					<dd>  <a href="{% static 'uploads/{{stage.soutenance.rapport.fichier}}' %}" download="rapport_{{stage.stagiaire.prenom}}_{{stage.stagiaire.nom}}_{{stage.lieu}}_{{stage.anneeAcademique}}"> Télécharger </a> </dd>
+
+					<dt>Salle: </dt>
+					<dd> {{stage.soutenance.salle}}</dd>
+
+					<dt> Heure: </dt>
+					<dd> {{stage.soutenance.dateEffictive}} {% if  stage.soutenance.dateEffictive %} {% else %}  {{stage.soutenance.datePrevu}} {% endif %} {{stage.soutenance.heure}} </dd>
+				</dl>
+			</td> </tr>
+		</table>
+	{% empty %}
+		<p class="errorlist"> Aucun stage trouvé. </p>
+		<p> <a href="{% url 'accueil' %}"> Ratour à l'accueil </a> </p>
+	{% endfor %}
+	{% if stages|length != 0 %}
+		<p>Il y a un total de {{stages|length}} stage{{stages|length|pluralize}} <a href="{% url 'accueil' %}"> Retourner à l'accueil </a>  </p>
+	{% endif %}
+	{% endblock %}
+{% endblock %}

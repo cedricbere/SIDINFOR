@@ -4,9 +4,9 @@
 <key>DJANGO_MANAGE_LOCATION</key>
 <value>manage.py</value>
 <key>DJANGO_SETTINGS_MODULE</key>
-<value>Stage.settings</value>
+<value>common.settings</value>
 <key>PY</key>
-<value>36</value>
+<value>37</value>
 </pydev_variables_property>
 <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
 <path>/${PROJECT_DIR_NAME}</path>

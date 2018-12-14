@@ -1,0 +1,13 @@
+{% extends "base2test.html" %}
+{% load staticfiles %}
+{% block title %}Selection niveau{% endblock %}
+{% block bodyId %}liste{% endblock %}
+
+{% block info %}
+<div class="btn-group">
+	<ol>
+		<li> <a href="{% url 'depot_dossier:t_admin' 'master' %}"> Liste des candidatures master </a> </li>
+		<li> <a href="{% url 'depot_dossier:t_admin' 'doctorat' %}"> Liste des candidatures doctorat </a> </li>
+	</ol>
+</div>
+{% endblock %}

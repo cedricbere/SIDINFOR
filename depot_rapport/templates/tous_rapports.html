@@ -1,0 +1,81 @@
+{% extends "mes_rapports.html" %}
+{% block title %}Consulter les rapports{% endblock %}
+{% block bodyId %}consulterRapports{% endblock %}
+
+{% block breadcrumb %}
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"> <a href="{% url 'accueil' %}">Accueil</a></li>
+		<li class="breadcrumb-item active">Consulter des rapports de stage</li>
+	</ol>
+</nav>
+{% endblock %}
+{% block centre %}
+
+{% include 'recherche.html' %}
+{% block info %}
+<p class="container">
+	{% if stages|length  == 0 %}
+		<p class="errorlist"> Aucun stage n'est chargé </p>
+		<p> <a href="../../accueil"> Ratour à l'accueil </a> </p>
+	{% else %}
+		<center class="center"> <h1>Liste de l'ensemble des stages des étudiants</h1> </center>
+		{% for stage in stages %}
+			<table border="1">
+				<tr> <th> Stage Numéro  </th> </tr>
+				<tr> <td>
+					<dl class="container">
+						<dt> Auteur: </dt>
+						<dd>{{stage.stagiaire.prenom|capfirst}} {{stage.stagiaire.nom|capfirst}} </dd>
+
+						<dt> Maître de stage: </dt>
+						<dd>{{stage.maitreStage|title}} </dd>
+
+						<dt> Superviseur: </dt>
+						<dd>{{stage.superviseur|title}} </dd>
+
+						<dt> Lieu: </dt>
+						<dd>{{stage.lieu}} </dd>
+
+					{% if stage.rapport %}
+						<dt>Thème: </dt>
+						<dd> {{stage.rapport.theme}} </dd>
+
+						<dt>Mots Clés: </dt>
+						<dd> {{stage.rapport.motsCle}} </dd>
+
+						<dt>Résumé: </dt>
+						<dd> {{stage.rapport.resume|truncatewords:100}} </dd>
+
+
+						<dt> Rapport uploadé: </dt>
+						<dd>  <a href="" download="rapport_{{stage.stagiaire.prenom}}_{{stage.stagiaire.nom}}_{{stage.lieu}}_{{stage.rapport.annee_academique}}"> Télécharger </a> </dd>
+					{% else %}
+						<p> Aucun rapport n'a été sauvegardé pour ce stage</p>
+					{% endif %}
+					{% if stage.soutenance %}
+						<dt>Date et lieu de soutenance: </dt>
+						<dd> {% if not stage.soutenance.dateEffective %} {{stage.soutenance.datePrevu}} {% else %} {{stage.soutenance.dateEffective}} {% endif %} {{stage.soutenance.heure}} en {{stage.soutenance.salle}}</dd>
+						{% if stage.soutenance.jury %}
+							<dt>Jury: </dt> <dd>{{stage.soutenance.jury}}</dd>
+						{% endif %}
+						{% if stage.soutenance.note %}
+							<dt>Note: </dt> <dd>{{stage.soutenance.note}}/20</dd>
+						{% endif %}
+					{% else %}
+						<p> Aucune soutenance n'a été sauvegardé pour ce stage</p>
+					{% endif %}
+					</dl>
+				</td> </tr>
+			</table>
+		{% empty %}
+			<p class="errorlist"> Vous n'avez uploadé aucun stage. </p>
+			<p> <a href="{% url 'accueil' %}"> Retour à l'accueil </a> </p>
+		{% endfor %}
+
+		<p>Il y a un total de {{stages|length}} stage{{stages|length|pluralize}} <a href="{% url 'accueil' %}"> Retourner à l'accueil </a>  </p>
+	{% endif %}
+</p>
+{% endblock %}
+
+{% endblock %}

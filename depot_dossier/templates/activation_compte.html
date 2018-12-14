@@ -1,0 +1,19 @@
+{% extends 'base1.html' %}
+{% load staticfiles %}
+{% block title %}Activation de compte{% endblock %}
+{% block autreCSS%} <link rel="stylesheet" type="text/css" href="{% static 'css/activation_compte.css' %}"/> {% endblock %}
+
+{% block bodyId %}activation{% endblock %}
+
+{% block contenu %}
+	<h1>Activation de compte sidinfor</h1>
+	{% if activation %}
+	<div>
+		Votre compte sur SIDINFOR est activée. Suivez ce <a href="{% url 'login' %}">lien</a> pour vous connecter et poursuivre le dépôt de dossier.
+	</div>
+	{% else %}
+	<div>
+		Echec d'activation. Vérifier le lien envoyé par mail.
+	</div>
+	{%endif  %}
+{% endblock %}
