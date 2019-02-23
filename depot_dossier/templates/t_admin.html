@@ -1,0 +1,25 @@
+{% extends "base2test.html" %}
+{% load staticfiles %}
+{% block title %}Admin{% endblock %}
+{% block bodyId %}admin{% endblock %}
+
+{% block info %}
+<table border="1" width="100%">
+	<caption> <div class="row"> <a href="{% url 'depot_dossier:t_admin' %}" class="col-1"> Retour </a> <div class="offset-9"></div> <a href="{% if niveau == 'master' %} {% url 'depot_dossier:fichier_excel' 'master' %} {% elif niveau == 'doctorat' %} {% url 'depot_dossier:fichier_excel' 'doctorat' %} {% endif %}" class="col-2"> Produire du Excel </a> </div> </caption>
+	<tr>
+		<th align="center">ID</th> <th align="center">Nom</th> <th align="center">Prénom</th> <th align="center">Date de naissance</th> <th align="center">Lieu de naissance</th> <th align="center">Nationalité</th> <th align="center">N. dossier</th> <th align="center">Date de dépot</th>
+
+		<th>Pays</th>
+	</tr>
+	{% for postulant in liste_postulant %}
+	<tr>
+		<td align="center">{{postulant.id}}</td> <td align="center">{{postulant.nom}}</td> <td align="center">{{postulant.prenom}}</td> <td align="center">{{postulant.dateNaissance}}</td> <td align="center">{{postulant.lieuNaissance}}</td> <td align="center">{{postulant.nationalite}}</td > <td align="center">{{postulant.dossier.numero_dossier}}</td> <td align="center">{{postulant.dossier.date_inscription}}</td>
+		<td align="center">{{postulant.pays.name}}  <img src="{{postulant.pays.flag}}"></td>
+	</tr>
+	{% empty %}
+	<tr>
+		<td colspan="9" align="center">Aucun élément trouvé</td>
+	</tr>
+	{% endfor %}
+</table> 
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base2test.html" %}
+{% load staticfiles %}
+{% block autreCSS %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/liste_table.css' %}"/> 
+{% endblock %}
+{% block title %}Consulter mes rapports{% endblock %}
+{% block bodyId %}mesRapport{% endblock %}
+
+{% block breadcrumb %}
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"> <a href="{% url 'accueil' %}">Accueil</a></li>
+		<li class="breadcrumb-item active">Mes rapports</li>
+	</ol>
+</nav>
+{% endblock %}
+
+{% block centre %}
+
+{% include 'recherche.html' %}
+{% block info %}
+<p class="container">
+	<center class="center"> <h1>List de l'ensemble de vos stages déjà effectués et encours</h1> </center>
+	{% for stage in stages %}
+		<table border="1">
+			<caption>Vous avez un total de {{stages|length}} stage{{stages|length|pluralize}} <a href="{% url 'accueil' %}"> Retourner à l'accueil </a> <a href="{% url 'depot_rapport:depotrapport' %}"> Charger un nouveau stage </a>  </caption>
+			<tr> <th> Stage Numéro  </th> </tr>
+			<tr> <td>
+				<dl class="container">
+					<dt> Auteur: </dt>
+					<dd>{{stage.stagiaire.prenom|capfirst}} {{stage.stagiaire.nom|capfirst}} </dd>
+
+					<dt> Maître de stage: </dt>
+					<dd>{{stage.maitreStage|title}} </dd>
+
+					<dt> Superviseur: </dt>
+					<dd>{{stage.superviseur|title}} </dd>
+
+					<dt> Lieu: </dt>
+					<dd>{{stage.lieu}} </dd>
+
+					<dt>État d'avancement: </dt>
+					<dd> {{stage.etat}} </dd>
+				{% if stage.rapport %}
+					<dt>Thème: </dt>
+					<dd> {{stage.rapport.theme}} </dd>
+
+					<dt>Mots Clés: </dt>
+					<dd> {{stage.rapport.motsCle}} </dd>
+
+					<dt>Résumé: </dt>
+					<dd> {{stage.rapport.resume}} </dd>
+
+					<dt> Date de chargement du rapport: </dt>
+					<dd> {{stage.rapport.dat_premierChargement|date:"l, d F Y"}} </dd>
+
+					<dt>Date de dernière modification: </dt>
+					<dd> {{stage.rapport.date_modification|date:"l, d F Y H:i:s"}} </dd>
+				{% else %}
+					<p> Vous n'avez pas encore sauvegardé de rapport pour ce stage</p>
+				{% endif %}
+				{% if stage.soutenance %}
+					<dt>Date de Soutenance: </dt>
+					<dd>{% if not stage.soutenance.dateEffective %} {{stage.soutenance.datePrevu|date:"l, d F Y"}} {% else %} {{stage.soutenance.dateEffective|date:"l, d F Y"}} {% endif %}</dd>
+
+					<dt>Salle: </dt>
+					<dd> {{stage.soutenance.salle}}</dd>
+
+					<dt> Heure: </dt>
+					<dd> {{stage.soutenance.heure|time:"H:i:s"}} </dd>
+					{% if stage.soutenance.jury %}
+						<dt>Jury: </dt> <dd>{{stage.soutenance.jury}}</dd>
+					{% endif %}
+					{% if stage.soutenance.note %}
+						<dt>Note: </dt> <dd>{{stage.soutenance.note}}/20</dd>
+					{% endif %}
+				{% else %}
+					<p> Vous n'avez pas encore sauvegardé de soutenance pour ce stage</p>
+				{% endif %}
+				</dl>
+			</td> </tr>
+		</table>
+	{% empty %}
+		<p class="errorlist"> Vous n'avez uploadé aucun stage. </p>
+		<p> <a href="{% url 'accueil' %}"> Ratour à l'accueil </a> </p>
+	{% endfor %}
+</p>
+{% endblock %}
+
+{% endblock %}

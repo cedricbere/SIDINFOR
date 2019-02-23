@@ -1,0 +1,57 @@
+{% extends "base1.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_field %}
+{% block title %}Inscription{% endblock %}
+{% block autreCSS%} {{etudiant.media.css}} {% endblock %}
+{% block bodyId %}inscription{% endblock %}
+
+{% block contenu %}
+	<h1> Inscription </h1>
+
+	<form class="mb-5">
+			<div class="row">
+				<label for="typeProfile" class="col-12" style="text-align: center; text-shadow: 3px 1px lightblue; font-size: 1.3em;"> Veuillez choisir votre régime: </label>
+			</div>
+			<div class="row">
+				<select id = "typeProfile" name="typeProfile" class="form-control col-12">
+					<option value=""> -------- </option>
+					<option value="etudiant" {% if etudiant.is_bound %}	selected="selected" {% endif %}> Étudiant </option>
+					<option value="postulant" {% if postulant.is_bound %} selected="selected" {% endif %}> Postulant  </option>
+				</select>
+			</div>
+	</form>
+
+	<form action="" method="post" id = "FormEtudiant">
+		{% csrf_token %}
+		{% crispy etudiant %}
+		{% crispy compteEtudiant %}
+		<input type="hidden" value="etudiant" name="typeProfile" />
+		<div class="btn btn-group mb-5 mt-5">
+			
+			<input type="submit" value="Envoyer" name="envoieEtud" id="envoieEtud" class="btn btn-success" />
+			<div class="offset-10"></div>
+			<a class="btn btn-info" href="{% url 'login' %}"> Annuler </a>
+		</div>
+		
+	</form>
+
+	<form action="" method="post" id = "FormPostulant">
+		{% csrf_token %}
+		{% crispy postulant %}
+		{% crispy formation %}
+		{% crispy comptePostulant %}
+		<input type="hidden" value="postulant" name="typeProfile" />
+		<div class="btn btn-group mb-5 mt-5">
+			<input type="submit" value="Envoyer" name="envoiePost" id="envoiePost" class="btn btn-success" />
+			<div class="offset-10"></div>
+			<a class="btn btn-info" href="{% url 'login' %}"> Annuler </a>
+		</div>
+	</form>
+
+{% endblock %}
+
+{% block script %}
+	{{etudiant.media.js}}
+	<script type="text/javascript" src="{% static 'js/inscription.js' %}"></script>
+{% endblock %}

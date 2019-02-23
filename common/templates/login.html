@@ -1,0 +1,26 @@
+{% extends "base1.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% block autreCSS%}  <link rel="stylesheet" type="text/css" href="{% static 'css/signin.css' %}"/>
+{{form.media}} {% endblock %}
+{% block title %}Connexion{% endblock %}
+{% block bodyId %}login{% endblock %}
+
+
+{% block contenu %}
+	<h1>Entrez vos informations</h1>
+	{% if activation %}
+		<ul class="errorlist"> <li> {{activation}} </li> </ul>
+	{% endif %}
+	{% crispy form %}
+{% endblock %}
+
+{% block script %}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			// body...
+			$('#id_pseudo').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
+			$('#id_password').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
+		})
+	</script>
+{% endblock %}

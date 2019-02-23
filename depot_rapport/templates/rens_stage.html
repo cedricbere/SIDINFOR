@@ -1,0 +1,85 @@
+{% extends "base2test.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_field %}
+{% block autreCSS %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/rens_stage.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/rens_depot.css' %}"/>
+	{{stage.media.css}}
+{% endblock %}
+{% block title %}Dépot de rapport de stage{% endblock %}
+{% block bodyId %}stageRapport{% endblock %}
+
+{% block breadcrumb %}
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"> <a href="{% url 'accueil' %}">Accueil</a></li>
+		<li aria-current="page" class="breadcrumb-item active">Formulaire de dépot de stage</li>
+	</ol>
+</nav>
+{% endblock %}
+
+{% block infoDossier %}
+	{% if user.type_personne == 'Etudiant' %}
+	<div class="row" id="infoDos">
+		<div class="col-4 col-sm-4 col-md-4 col-lg-4">
+			<div class="label"> Total de rapport:  </div> <div class="val"> Vous avez un total de {{total_fini}} rapport{{total_fini|pluralize}} sauvegardé{{total_fini|pluralize}}  </div>
+			
+		</div>
+		<div class="offset-4 offset-sm-4 offset-md-4 offset-lg-4"></div>
+		<div class="col-4 col-sm-4 col-md-4 col-lg-4">
+			<div class="label"> Nombre de stage encours:  </div> <div class="val"> Vous avez {{stage_encours}} encours </div>
+			
+		</div>
+	</div>
+	{% endif %}
+{% endblock %}
+
+{% block centre %}
+
+{% include 'recherche.html' %}
+{% block info %}
+	<nav id="onglet" class="row nav nav-tabs"> 
+		<div class="col-4 col-md-4 col-sm-4 col-lg-4 col-xl-4"> <a href="#stage" class="nav-item nav-link active" data-toggle="tab" id="ongletStage"> <center> Stage </center> </a> </div>
+		<div class="col-4 col-md-4 col-sm-4 col-lg-4 col-xl-4"> <a href="#rapport" class="nav-item nav-link" data-toggle="tab" id="ongletRapport"> <center> Rapport </center> </a> </div>
+		<div class="col-4 col-md-4 col-sm-4 col-lg-4 col-xl-4"> <a href="#soutenance" class="nav-item nav-link" data-toggle="tab" id="ongletSoutenance"> <center> Soutenance </center> </a>  </div>
+	</nav>
+
+	<div class="tab-content">
+		<div class="tab-pane active" id="stages"> <center class="container contenuRens">
+			<div>
+				<p>Ajout du texte en lien avec stage.</p>
+			</div>
+			{% if erreur_stage %}
+				<div class="probleme"> {{erreur_stage}} </div>
+			{% endif %}
+			{% crispy stage %}
+		</center> </div>
+		<div class="tab-pane" id="rapport"> <center class="container contenuRens">
+			<div>
+				<p>Ajout du texte en lien avec rapport de stage.</p>
+			</div>
+			{% if erreur_rapport %}
+				<div class="probleme"> {{erreur_rapport}} </div>
+			{% endif %}
+			{% crispy rapport %}
+		</center> </div>
+		<div class="tab-pane" id="soutenance"> <center class="container contenuRens">
+			<div>
+				<p>Ajout du texte en lien avec soutenance.</p>
+			</div>
+			{% if erreur_soutenance %}
+				<div class="probleme">{{erreur_soutenance}} </div>
+			{% endif %}
+			{% crispy soutenance %}
+		</center> </div>
+	</div>
+
+{% endblock %}
+{% endblock %}
+
+{% block autreScript %}
+	{{stage.media.js}}
+	<script type="text/javascript" src="{% static 'js/rens_stage.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/rens_depot.js' %}"></script>
+{% endblock %}
