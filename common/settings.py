@@ -39,10 +39,10 @@ ALLOWED_HOSTS = ['sidinfor.herokuapp.com']
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_SUBJECT_PREFIX = '[SIDINFOR]'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER ='parice02@gmail.com'
-EMAIL_HOST_PASSWORD = 'MoH@-Ze_0z'
-#EMAIL_USE_SSL = True
-#EMAIL_USE_TLS = True
+EMAIL_HOST_USER =''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = True
 
 
 CSRF_COOKIE_SECURE = True
