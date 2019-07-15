@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
+
+
 '''
 Created on 9 oct. 2018
 
@@ -6,18 +10,21 @@ Created on 9 oct. 2018
 from django.db import models
 #from django.contrib.auth.models import User 
 
+#from phonenumber_field.modelfields import PhoneNumberField
+from common.outils import chemin_sauvegarde_carousel
+
 
 class Personne (models.Model):
     """
     Modèle Personne. Permet de stocker des info sur une personne 
     """
-    nom = models.CharField("Nom", max_length = 30)
-    prenom = models.CharField("Prénom", max_length = 30)
+    nom = models.CharField("Nom(s)", max_length = 30)
+    prenom = models.CharField("Prénom(s)", max_length = 30)
     Homme,Femme = 'Homme', 'Femme'
     SEXE = ((Homme, 'Homme'), (Femme, 'Femme'))
     sexe = models.CharField(choices = SEXE, max_length = 5, default = Homme, null = False)
-    dateNaissance = models.DateField("Date de Naissance", null = True, blank=True)
-    numTel = models.CharField("Téléphone", max_length = 25, unique = True, null = True, blank=True)
+    date_naissance = models.DateField("Date de Naissance", null = True, blank=True)
+    num_tel = models.CharField("Téléphone", max_length = 50, unique = True, null = True, blank=True)
     type_personne = ''
     
     def __str__(self):
@@ -119,3 +126,14 @@ class Matiere(models.Model):
     
     class Meta:
         verbose_name = 'Matière'
+
+class Carousel(models.Model):
+    """
+    """
+    nom_carousel = models.CharField("Titre de l'image", max_length = 100, unique = True)
+    image_path = models.ImageField(verbose_name = "Image", upload_to = chemin_sauvegarde_carousel, null = False, blank = False, unique = True)
+    description_image = models.TextField("Description de l'image", null = True, blank = True)
+    adresse_web = models.URLField(max_length = 300, null = True, blank = True)
+
+    def __str__(self):
+        return self.nom_carousel

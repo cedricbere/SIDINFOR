@@ -1,4 +1,7 @@
-# -*- conding:utf8 -*-
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
+
+
 '''
 Created on 10 mai 2018
 
@@ -6,7 +9,7 @@ Created on 10 mai 2018
 '''
 
 from django import forms
-from depot_rapport.models import Etudiant
+from depot_rapport.models import Etudiant, InfoSup
 from depot_dossier.models import Postulant
 from crispy_forms.layout import Layout, Submit, HTML, Column, Div
 from bootstrap_datepicker_plus import DatePickerInput
@@ -35,8 +38,7 @@ class LoginForm(forms.Form):
                 'pseudo',
                 'password',
             Column(
-                 Submit('submit', 'Se Connecter',),
-                 HTML("<a href='%s' class='btn btn-secondary float-right'> %s </a>" % ("{% url 'inscription' %}","S'inscrire")),
+                 Submit('submit', 'Se Connecter',)
                  ),           
             )
         return helper
@@ -65,22 +67,22 @@ class FormEtudiant(forms.ModelForm):
         helper.field_class = 'col-8'
         helper.layout = Layout(
             Div(
-            'nom', 'prenom', 'sexe', 'dateNaissance', 'niveau', 'filiere', 'promotion', 'matricule'),           
+            'nom', 'prenom', 'sexe', 'date_naissance', 'classe', 'filiere', 'promotion', 'matricule'),           
             )
         return helper
         
         
     class Meta:
         model = Etudiant
-        exclude = ('id', 'compte', 'email','numTel')
+        exclude = ('id', 'compte', 'email','num_tel')
         widgets = {
-            'dateNaissance': DatePickerInput(options={'format': 'DD/MM/YYYY'},
+            'date_naissance': DatePickerInput(options={'format': 'DD/MM/YYYY'},
                 attrs={'data-toggle': 'popover', 'data-content': 'Veuillez entrer votre date de naissance.'}),
             'nom': forms.TextInput(attrs={'placeholder': 'votre nom de famille','data-toggle': 'popover', 'data-content':'Veuillez saisir votre nom de famille.', }),
             'prenom': forms.TextInput(attrs={'placeholder': 'votre (vos) prénom(s)', 'data-toggle': 'popover', 'data-content':'Veuillez saisir votre (vos) prénom(s).', }),
             'matricule': forms.TextInput(attrs={'placeholder': 'votre matricule', 'data-toggle': 'popover', 'data-content': 'Veuillez saisir votre matricule.', }),
             'sexe': forms.Select(attrs={'data-toggle': 'popover', 'data-content': 'Veuillez choisir votre sexe.'}),
-            'niveau': forms.Select(attrs={'data-toggle': 'popover', 'data-content': 'Veuillez choisir votre niveau.'}),
+            'classe': forms.Select(attrs={'data-toggle': 'popover', 'data-content': 'Veuillez choisir votre niveau.'}),
             'filiere': forms.Select(attrs={'data-toggle': 'popover', 'data-content': 'Veuillez choisir votre filière.'}),
             'promotion': forms.TextInput(attrs={'data-toggle': 'popover', 'data-content': 'Veuillez choisir votre promotion.', 'placeholder': 'votre promotion Ex: 2017 - 2018'}),
             }
@@ -94,6 +96,39 @@ class FormEtudiant(forms.ModelForm):
         else:
             raise forms.ValidationError("Veuillez vérifier les information saisies.")
 
+
+class FormInfoSup(forms.ModelForm):
+    """
+    """
+    
+    @property
+    def helper(self):
+        helper = FormHelper()
+        helper.form_tag = False
+        helper.disable_csrf = True
+        helper.include_media = False
+        helper.form_class ='form-horizontal'
+        helper.label_class = 'col-4'
+        helper.field_class = 'col-8'
+        helper.layout = Layout(
+            Div('photo_id', 'emplois', 'compte_facebook', 'compte_twitter', 'compte_linkedin'),           
+            )
+        return helper
+    
+    class Meta:
+        model = InfoSup
+        fields = '__all__'
+        
+    
+    def clean(self):
+        cleaned_data = super(InfoSup, self).clean()
+        
+        if cleaned_data:
+            return cleaned_data
+        else:
+            raise forms.ValidationError("Veuillez vérifier les information saisies.")
+        
+    
 
 class FormPostulant(forms.ModelForm):
     """
@@ -112,9 +147,9 @@ class FormPostulant(forms.ModelForm):
         
     class Meta:
         model = Postulant
-        fields = ('nom', 'prenom', 'sexe', 'dateNaissance', 'pays')
+        fields = ('nom', 'prenom', 'sexe', 'date_naissance', 'pays')
         widgets = {
-            'dateNaissance': DatePickerInput(options={'format': 'DD/MM/YYYY'},
+            'date_naissance': DatePickerInput(options={'format': 'DD/MM/YYYY'},
                 attrs={'data-toggle': 'popover', 'data-content': 'Veuillez entrer votre date de naissance.'}),
             'nom': forms.TextInput(attrs={'placeholder': 'votre nom', 'data-toggle': 'popover', 'data-content':'Veuillez saisir votre nom de famille.',}),
             'prenom': forms.TextInput(attrs={'placeholder': 'votre prénom', 'data-toggle': 'popover', 'data-content':'Veuillez saisir votre (vos) prénom(s).',}),            

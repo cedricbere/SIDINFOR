@@ -1,0 +1,14 @@
+{% extends "base2.html" %}
+{% load staticfiles %}
+{% block title %}sidinfor{% endblock %}
+{% block bodyId %}index{% endblock %}
+
+
+{% block login %}
+	<div>
+		{% if form %}
+			{% include 'login2.html' %}
+		{% endif %}
+		
+	</div>
+{% endblock %}

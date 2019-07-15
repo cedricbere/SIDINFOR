@@ -1,4 +1,4 @@
-{% extends "base2test.html" %}
+{% extends "base2.html" %}
 {% load staticfiles %}
 {% block title %}d'accueil{% endblock %}
 {% block bodyId %}accueil{% endblock %}
@@ -21,15 +21,15 @@
 	<center class="center">
 		<ul class="nav navbar container my-6" id="liste_options">
 			{% if user.type_personne == 'Etudiant' %}
-			<div>
+<!--			<div> -->
 				<li> <a class="mr-4 nav-link" href="{% url 'depot_rapport:depotrapport' %}"> <img src="{% static 'img/bouton/1.jpg' %}" alt="logo_stage" title="Formulaire de stage"/> </a> </li>
-				<li> <a class="mr-4 nav-link" href="{% url 'depot_rapport:mes_rapports' %}"><img src="{% static 'img/bouton/13.jpg' %}" alt="logo_rapport" title="{% if user.niveau.nom_classe == 'Licence 3' %} Rapports {% elif user.niveau.nom_classe == 'Master 2' %} Mémoires {% endif %} de stage"/> </a> </li>
-			</div>
+				<li> <a class="mr-4 nav-link" href="{% url 'depot_rapport:mes_rapports' %}"><img src="{% static 'img/bouton/13.jpg' %}" alt="logo_rapport" title="{% if user.class.nom_classe == 'Licence 3' %} Rapports {% elif user.class.nom_classe == 'Master 2' %} Mémoires {% endif %} de stage"/> </a> </li>
+<!--			</div>  -->
 			{% endif %}
-			<div> 
+<!--			<div>  -->
 				<li> <a class="mr-4 nav-link" href="{% if user.type_personne == 'Postulant' %} {% url 'depot_dossier:renseignements' %} {% else %} # {% endif %}"> <img src="{% static 'img/bouton/11.jpg' %}" title="Dépôt de dossier" alt="logo_dépôt"> </a> </li>
 				<li> <a class="mr-4 nav-link" href="#" >Module 4</a> </li>
-			</div>
+<!--			</div> -->
 		</ul>
 	</center>
 </p>

@@ -1,22 +1,26 @@
-# -*- conding:utf8 -*-
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
 
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, HttpResponseNotFound
 from django.db.models import Q
 from django.forms import FileField
+from django.views.decorators.csrf import csrf_protect
+from django.core.paginator import Paginator
+from django.conf import settings
+
 from depot_rapport.forms import FormRapport, FormStage, FormSoutenance
 from depot_rapport.models import Stage, Rapport, Soutenance
+
+
 from common.views import user_form
 from common.outils import nettoyage, sauver_fichier
-from django.views.decorators.csrf import csrf_protect
-
 
 
 # Create your views here.
 
 # Charment de fichier via XHR à finir
 # Barre de recherche pas efficace
-
-
 
 
 @csrf_protect
@@ -28,25 +32,28 @@ def rens_rapport(request):
     
     logged_user = user_form(request)
     if not logged_user:
-        return redirect('/login')
+        return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
+    if logged_user.type_personne != 'Etudiant':
+            return redirect('/sidinfor/accueil')
     try:
-        stage = Stage.objects.exclude(etat = 'Fini').get(stagiaire = logged_user)
-    except Exception:
+        stage = Stage.objects.exclude(etat_stage = 'Fini').get(stagiaire = logged_user)
+    except Stage.DoesNotExist:
         stage = None
         
     try:
         rapport = Rapport.objects.get(stage = stage)
-    except Exception:
+        #print(rapport.fichier_rapport)
+    except Rapport.DoesNotExist:
         rapport = None
         
     try:
         soutenance = Soutenance.objects.get(rapport = rapport)
-    except Exception:
+    except Soutenance.DoesNotExist:
         soutenance = None
-    total_fini = len(Stage.objects.filter(stagiaire=logged_user, etat='Fini'))
-    stage_encours = len(Stage.objects.filter(stagiaire=logged_user).exclude(etat='Fini'))
+    total_fini = len(Stage.objects.filter(stagiaire=logged_user, etat_stage='Fini'))
+    stage_encours = len(Stage.objects.filter(stagiaire=logged_user).exclude(etat_stage='Fini'))
     
-       
+    
     formStage = FormStage(data = request.POST if request.POST and (request.POST['type_form'] == 'form_stage') else None, instance = stage)
     formRapport = FormRapport(data = request.POST if request.POST and (request.POST['type_form'] == 'form_rapport') else None,
        files = request.FILES if request.POST and (request.POST['type_form'] == 'form_rapport') else None, instance = rapport)
@@ -64,8 +71,8 @@ def rens_rapport(request):
             formStage.instance.stagiaire = logged_user
             if formStage.has_changed() and formStage.is_valid():
                 formStage.save()
-                return redirect('/depot_rapport/depotrapport/'+ancre)
-            erreur_stage = "Veuillez vous reconnecter et réessayer!"
+                #return redirect('/sidinfor/depot_rapport/depotrapport/'+ancre)
+            #erreur_stage = "Veuillez vous reconnecter et réessayer!"
         elif request.POST['type_form'] == 'form_rapport':
             ancre = '#rapport'
             formRapport.instance.auteur = logged_user
@@ -75,8 +82,8 @@ def rens_rapport(request):
                 if stage is not None:
                     formRapport.save()
                     sauver_fichier(file_path=formRapport.instance.fichier_rapport.path, file=request.FILES['fichier_rapport'])
-                    return redirect('/depot_rapport/depotrapport/'+ancre)              
-            erreur_rapport = "Veuillez d'abord remplir l'onglet Stage!"
+                    #return redirect('/sidinfor/depot_rapport/depotrapport/'+ancre)              
+            #erreur_rapport = "Veuillez d'abord remplir l'onglet Stage!"
         elif request.POST['type_form'] == 'form_soutenance':
             ancre = '#soutenance'
             formSoutenance.instance.etudiant = logged_user
@@ -85,8 +92,8 @@ def rens_rapport(request):
             if formSoutenance.has_changed() and formSoutenance.is_valid():
                 if (stage is not None) and (rapport is not None):
                     formSoutenance.save()
-                    return redirect('/depot_rapport/depotrapport/'+ancre)
-            erreur_soutenance = "Vérifiez que vous avez déjà sauvegardé un stage et rapport!"
+                    #return redirect('/sidinfor/depot_rapport/depotrapport/'+ancre)
+            #erreur_soutenance = "Vérifiez que vous avez déjà sauvegardé un stage et rapport!"
         #return redirect('/depot_rapport/depotrapport/'+ancre)
     return render(request, 'rens_stage.html', {'stage': formStage,
                                                'rapport': formRapport,
@@ -105,10 +112,15 @@ def mes_rapports(request):
     """
     logged_user = user_form(request)
     if logged_user:
-        stages = Stage.objects.filter(stagiaire = logged_user)        
+        if logged_user.type_personne != 'Etudiant':
+            return redirect('/sidinfor/accueil')
+        liste_stages = Stage.objects.filter(stagiaire = logged_user).order_by('rapport__date_modification')
+        paginator = Paginator(object_list = liste_stages, per_page = 5)
+        page_stage = request.GET.get('page')
+        stages = paginator.get_page(page_stage)      
         return render(request, 'mes_rapports.html', {'user': logged_user, 'stages': stages})
     else:
-        return redirect('/login')
+        return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
     
     
     
@@ -119,11 +131,28 @@ def tous_rapports(request):
     """
     logged_user = user_form(request)
     if logged_user:
-        stages = Stage.objects.all().filter(etat = 'Fini')
+        if logged_user.type_personne != 'Etudiant':
+            return redirect('/sidinfor/accueil')
+        liste_stages = Stage.objects.all().filter(etat_stage = 'Fini').order_by('rapport__date_modification')
+        paginator = Paginator(object_list = liste_stages, per_page = 5)
+        page_stage = request.GET.get('page')
+        stages = paginator.get_page(page_stage)
         return render(request, 'tous_rapports.html',{'user': logged_user, 'stages': stages,})
     else:
-        return redirect('/login')
-    
+        return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
+
+
+def telecharger_rapport(request, id_rapport = ''):
+    try: int(id_rapport)
+    except Exception: return HttpResponseNotFound()
+    try: rapport = Rapport.objects.get(id = id_rapport)
+    except Rapport.DoesNotExist: rapport = None
+    if rapport:
+        fichier = rapport.fichier_rapport
+        reponse = HttpResponse(fichier, content_type = 'application/pdf')
+        reponse['Content-Disposition'] = 'attachment; filename="rapport_'+(rapport.auteur.prenom.lower())+'_'+(rapport.auteur.nom.lower())+'.pdf"'
+        return reponse
+    else: return HttpResponseNotFound()
     
 # Cette vue n'est pas utilisé
 # Code incomplet
@@ -154,6 +183,8 @@ def resultats(request):
     """
     logged_user = user_form(request)
     if logged_user:
+        if logged_user.type_personne != 'Etudiant':
+            return redirect('/sidinfor/accueil')
         if request.method == 'POST' and 'champ' in request.POST:
             if len(request.POST['champ']) == 0:
                 return render(request, 'resultats.html', {'user': logged_user})
@@ -166,8 +197,8 @@ def resultats(request):
                     stages = Stage.objects.filter(Q(stagiaire__nom__in = donnees) | Q(stagiaire__prenom__in = donnees)# | 
                                                 #Q(rapport__theme__icontains = ' '.join(donnees)) | 
                                                 #Q(rapport__motsCle__icontains = ' '.join(donnees))
-                                                 )#.filter(etat = 'Fini')
-                    return render(request, 'resultats.html', {'user': logged_user, 'stages': stages})
+                                                 )#.filter(etat_stage = 'Fini')
+                    return render(request, 'resultats.html', {'user': logged_user, 'logged_user': stages})
     else:
         return redirect('/login')
 
@@ -192,5 +223,4 @@ def upload_fihier(request):
         return HttpResponse()
     print('Non reçu')
     return HttpResponse()
-        
-    
+  

@@ -1,48 +1,55 @@
 body
 {
-  min-height: 75em;
+  	font-family: Georgia, Arial, Tahoma, Verdana, sans-serif;
 }
 
-body section#contenu
+body div#contenu
 {
-	position: absolute;
-	top: 12em;
+	position: relative;
+	top: 4em;
+	width: 100%;
+	font-size: 0.95em;
 }
 
-body section#contenu div#blockGauche h3#liens
+body div#contenu div#centre
 {
-	text-align: center;
-	font-style: italic;
-	margin-bottom: 30px;
+	position: relative;
+	width: 100%;
 }
 
-body section#contenu div#blockGauche
+body div#contenu div#ban
 {
-	min-height: 100%;
-	width: 15em;
-	border-right: 1px solid lightblue;
-	background-color: #eeeedd;
-}
-
-body section#contenu div#centre
-{
-	margin: 0 0 0 7px;
-	position: absolute;
-	top: 10em;
-
-}
-
-body section#contenu div#ban
-{
-	margin-bottom: 50px;
-	border-bottom: 1px solid;
-	height: 8em;
-	align-content: center;
+	margin-bottom: 0.50em;
+	/*height: 17em;*/
 	background-color: lightgrey;
+	border-radius: 0.75em;
 }
 
-#contenu ul li.nav-item
+
+#contenu #centre h1
 {
-	font-size: 15px;
+	color: #3b5998;
+	border-bottom: 0.5px solid #3b5998;
+	font-size: 1em;
+	display: inline;
 }
 
+
+@media (max-width: 768px)
+{
+	#ban
+	{
+		display: none !important;
+	}
+}
+
+.center
+{
+	margin-top: 5em;
+	margin-bottom: 5em;
+}
+
+.bouton
+{
+	margin-top: 0.2em;
+}

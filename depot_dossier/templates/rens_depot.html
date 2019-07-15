@@ -1,9 +1,9 @@
-{% extends "base2test.html" %}
+{% extends "base2.html" %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 {% load crispy_forms_field %}
 {% load countries %}
-{% block title %}de formulaire de renseignement{% endblock %}
+{% block title %} formulaire de renseignement{% endblock %}
 {% block bodyId %}rens{% endblock %}
 {% block autreCSS %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/rens_depot.css' %}"/>
@@ -64,9 +64,9 @@
 		<nav id="onglets" class="row nav nav-tabs"> 
 			<div class="col-2 col-md-2 col-sm-2 col-lg-2 col-xl-2"> <a href="#idContenu" class="nav-item nav-link active" data-toggle="tab" id="id" > <center> Identification </center> </a> </div>
 			<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3"> <a href="#docContenu" class="nav-item nav-link" data-toggle="tab" id="doc" > <center> Document d'identité </center> </a> </div>
-			<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3"> <a href="#formationContenu" class="nav-item nav-link" data-toggle="tab" id="formation"> <center> {% if user.formation.niveau == 'Master' %} Formation sollicitée {% elif user.formation.niveau == 'Doctorat' %} Votre thèse {% endif %} </center> </a>  </div>
+			<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3"> <a href="#formationContenu" class="nav-item nav-link" data-toggle="tab" id="formation"> <center> {% if user.formation.niveau == 'master' %} Formation sollicitée {% elif user.formation.niveau == 'doctorat' %} Votre thèse {% endif %} </center> </a>  </div>
 			<div class="col-2 col-md-2 col-sm-2 col-lg-2 col-xl-2"> <a href="#curriculumContenu" class="nav-item nav-link" data-toggle="tab" id="curriculum"> <center> Curriculum </center> </a>  </div>
-			<div class="col-2 col-md-2 col-sm-2 col-lg-2 col-xl-2"> <a href="#pieceContenu" class="nav-item nav-link" data-toggle="tab" id="piece"> <center> Pièces jointes </center> </a>  </div>
+			<div class="col-2 col-md-2 col-sm-2 col-lg-2 col-xl-2"> <a href="#piecesContenu" class="nav-item nav-link" data-toggle="tab" id="pieces"> <center> Pièces jointes </center> </a>  </div>
 		</nav>
 		<div class="tab-content">
 			<div class="tab-pane active" id="idContenu"> <center class="container contenuRens">
@@ -101,31 +101,14 @@
 					<tr> <th bgcolor="lightgrey"> <div id="header_table">Mon curriculum</div> </th> </tr>
 					<tr> <td>
 						<div class="row form-row">
-							<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3 active"> <input type="radio" name="parcours" value="scolaire" checked="checked" class="active" id="scolaire"> Lycée & Collège </div>
-							<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3"> <input type="radio" name="parcours" value="universitaire" id="universitaire"> Université </div>
-							<div class="col-2 col-md-2 col-sm-2 col-lg-2 col-xl-2"> <input type="radio" name="parcours" value="stage" id="stage"> Stage </div>
-							<div class="col-2 col-md-2 col-sm-2 col-lg-2 col-xl-2"> <input type="radio" name="parcours" value="professionnel" id="professionnel"> Travail </div>
-							<div class="col-2 col-md-2 col-sm-2 col-lg-2 col-xl-2"> <input type="radio" name="parcours" value="autre" id="autre"> Autre </div>
+						<!--	<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3 active"> <input type="radio" name="parcours" value="scolaire" checked="checked" class="active" id="scolaire"> Lycée & Collège </div> -->
+							<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3 active"> <input type="radio" name="parcours" value="universitaire" checked="checked" class="active" id="universitaire"> Université </div>
+							<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3"> <input type="radio" name="parcours" value="stage" id="stage"> Stage </div>
+							<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3"> <input type="radio" name="parcours" value="professionnel" id="professionnel"> Travail </div>
+							<div class="col-3 col-md-3 col-sm-3 col-lg-3 col-xl-3"> <input type="radio" name="parcours" value="autre" id="autre"> Autre </div>
 						</div>
 						<div class="tab-content">
-							<div class="tab-pane active contenuRens" id="scoContenu">
-								{% if parcoursScolaire.extra > 0 %}
-								<form method="post" class="form-horizontal mb-5">
-									{% csrf_token %}
-									<div id="sco_forms"> {% crispy parcoursScolaire helperScolaire %}</div>
-									<input type="hidden" name="type_form" value="scolaire">
-									<div align="center" class="mb-5">
-										<button class="btn" id="add-form_sco" type="button" title="Cliquer pour ajouter un nouvelle ligne">+</button>
-										<input type="submit" class="btn btn-primary" value="Sauvegarder">
-										<button class="btn" id="dup-form_sco" type="button" title="Cliquer pour dupliquer la dernière ligne" style="width: 5%;"><img src="{% static 'img/clone.svg' %}" alt="img_copie"></button>
-									</div>
-        						</form>
-        						<div style="display: none;">
-        							<div id="sco-empty_form"> {% crispy parcoursScolaire.empty_form helperScolaire %} </div>
-        						</div>
-        						{% endif %}
-							</div>
-							<div class="tab-pane contenuRens" id="univContenu">
+							<div class="tab-pane contenuRens active" id="univContenu">
 								{% if parcoursUniversitaire.extra > 0 %}
         						<form method="post" class="form-horizontal mb-5">
 									{% csrf_token %}
@@ -198,35 +181,47 @@
 				</table>
 				
 			 </div>
-			<div class="tab-pane" id="pieceContenu"> <center class="container contenuRens"> Contenu pièces jointes
+			<div class="tab-pane" id="piecesContenu"> <center class="container contenuRens"> Contenu pièces jointes
 				<div>
 					<p>Téléchargement des fichiers.</p>
-					<p>* Seuls les champs 'Passport' (si vous être originaire d'un pays memebre de la CEDEAO) et 'Attestation de Master' (si vous postulez pour le Master) <span style="font-style: italic; font-weight: bold; color: red">ne sont pas obligatoires</span></p>
+					<p>* Seuls les champs 'Passport' (si vous être originaire d'un pays memebre de la CEDEAO) et 'Attestation de Master' (si vous postulez pour le Master) <span style="font-style: italic; font-weight: bold; color: red;">ne sont pas obligatoires</span></p>
 				</div>
-				<form method="post" enctype="multipart/form-data" class="form-horizontal mb-5">
+				<form method="post" enctype="multipart/form-data" class="form-horizontal mb-5" id="form_fichier">
 					{% csrf_token %}
 					<table class="table table-responsive-sm table-responsive-md table-responsive-lg">
 					{% for field in fichiers_post %}
-					
-						<tr> <td class="row"> <div class="col-sm-5 col-md-5 col-lg-5"> {{ field.label_tag }} </div> <div class="col-sm-5 col-md-5 col-lg-5">{{ field }} </div>  <button type="button" class="col-sm-1 col-md-1 col-lg-1 btn btn-sm btn-block" title="Télécharger le fichier"> <img src="{% static 'img/play-circle.svg' %}" alt="bouton_de_sauvegarde"> </button> <!-- <img src="{% static 'img/play-circle.svg' %}" alt="bouton_de_sauvegarde" class=" btn col-sm-1 col-md-1 col-lg-1"> --> </td> </tr>
+						<tr> <td class="row"> 
+							<div class="row col-12"> <div class="color_champs" id="{{field.name}}"></div> </div>
+							<div class="col-sm-5 col-md-5 col-lg-5"> {{ field.label_tag }} </div> <div class="col-sm-5 col-md-5 col-lg-5">{{ field }} </div> </td> </tr>
 					{% endfor %}
+
+					{{attestation_travail.management_form}}
 					{% for form in attestation_travail %}
 						<tr> <td> {% crispy form  helperAttestationTravail %}	</td> </tr>
 					{% endfor %}
+
+					{{attestation_stage.management_form}}
 					{% for form in attestation_stage %}
 						<tr> <td> {% crispy form  helperAttestationStage %} </td> </tr>
 					{% endfor %}
+
+					{{attestation_autre.management_form}}
 					{% for form in attestation_autre %}
 						<tr> <td> {% crispy form  helperAttestationAutre %}	</td> </tr>
 					{% endfor %}
+
+					<tr class="invisible"> <td> <div id="progressbar"></div> <div id="valeur_progress"></div> </td> </tr>
+
+					<div id="ms_sauve" class="invisible"> <h3> Vos informations ont été sauvegardé!! </h3> </div>
 					</table>
+					<div id="erreurs_attestations" class="color_champs"></div>
 					<div class="btn btn-group mt-5">
 						<input type="hidden" name="type_form" value="pieces_jointes">
 						<input type="submit" value="Sauvegarder" class="btn btn-primary">
 					<!--	<input type="reset" value="Effacer" class="btn btn-primary"> -->
 					</div>
 				</form>
-				{# crispy fichiers_post #}
+				
 			</center> </div>
 		</div>
 		{% endif %}

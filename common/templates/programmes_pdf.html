@@ -1,0 +1,33 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title></title>
+	<!-- <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css' %}"/> -->
+	</head>
+	<body style="font-family: 'Times New Roman'">
+		<div class="row mt-5">
+			<div class="col-12">
+				<div class="row"> <div class="col-12" style="text-align: center;"> <h1> LISTE DES FORMATIONS DE LICENCE DE L’UFR-SEA </h1> </div> </div>
+
+				<div class="row"> <div class="col-12" style="text-align: center;"> <h3> Domaine Sciences et Technologies {{semestre}} </h3> </div> </div>
+				<div class="row"> <div class="col-12" style="text-align: center;"> <h4> PARCOURS : INFORMATIQUE </h4> </div> </div>
+			</div>
+		</div>
+		<table border="1" width="100%">
+			<tr> <th colspan="4"> Programme de cours {{matieres.ue.semestre.niveau.nom_classe|capfirst}} {{matieres.ue.semestre.nom_semestre|capfirst}} </th> </tr>
+			<tr> <th>Code</th> <th>Unité d'enseignement</th> <th>Éléments constitutifs</th> <th>Crédits</th> </tr>
+		{% for matiere in matieres %}
+			{% if matiere.ue.semestre.nom_semestre == semestre %}
+				<tr>
+					<td> {{matiere.ue.code|upper}} </td>
+					<td> {{matiere.ue.nom_unite|title}} </td>
+					<td> {{matiere.nom_matiere|title}} </td>
+					<td> {{matiere.credits}} </td>	
+				</tr>
+			{% endif %}
+		{% endfor %}
+		</table>
+	</body>
+</html>

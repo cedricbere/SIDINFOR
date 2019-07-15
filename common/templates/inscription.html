@@ -25,6 +25,7 @@
 	<form action="" method="post" id = "FormEtudiant">
 		{% csrf_token %}
 		{% crispy etudiant %}
+		{% crispy autre_info %}
 		{% crispy compteEtudiant %}
 		<input type="hidden" value="etudiant" name="typeProfile" />
 		<div class="btn btn-group mb-5 mt-5">

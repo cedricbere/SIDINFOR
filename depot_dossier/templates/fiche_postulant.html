@@ -1,0 +1,309 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+{% load staticfiles %}
+{% block extrastyle %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/liste_table.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/modal.css' %}"/>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+    	<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &rsaquo;
+    	<a href="{% url 'admin:gestion' %}"> Gestion & Suivi </a> &rsaquo;
+    	{% if trouve %}
+    	<a href="{% url 'admin:gestion' postulant.formation.niveau %}"> Liste des candidats {{postulant.formation.niveau}} </a> &rsaquo;
+    	Fiche de {{postulant.prenom}} {{postulant.nom}}
+    	{% endif %}
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="module">
+	{% if trouve %}
+	
+		{% if postulant %}
+		<h2 class="section">Informations personnelles</h2>
+		<div class="row">
+			<div class="col-7">
+				<dl>
+					<dt>Nom:</dt> <dd> {{postulant.nom}} </dd>
+					<dt>Prénom:</dt> <dd> {{postulant.prenom}} </dd>
+					<dt>Date de naissance:</dt> <dd> {{postulant.date_naissance}} </dd>
+					<dt>Lieu de naissance:</dt> <dd> {{postulant.lieu_naissance}} </dd>
+					<dt>Pays:</dt> <dd> {{postulant.pays.name}} </dd>
+					<dt>Ville de résidence:</dt> <dd> {{postulant.ville}} </dd>
+					<dt>Sexe</dt> <dd> {{postulant.sexe}} </dd>
+					<dt>Adresse électronique:</dt> <dd> <a href="mailto:{{postulant.compte.email}}"> {{postulant.compte.email}} </a> </dd>
+					<dt>Contact:</dt> <dd> {{postulant.num_tel}} </dd>
+
+				</dl>
+			</div>
+			<div class="col-5">
+				<div id="cadre"> <img class="imga" width="30%" src="{% if pieces_jointes.photo_id %}{{ pieces_jointes.photo_id.url}} {% else %} # {% endif %}" title="{{postulant.nom|lower}}_{{postulant.prenom|lower}}" alt="photo_id_{{postulant.nom|lower}}_{{postulant.prenom|lower}}" data-url ="{{ pieces_jointes.photo_id.url}}" data-title=" Photo d'indentié de {{postulant.nom|capfirst}} {{postulant.prenom|capfirst}}" id="photo_id"> </div>
+				<dl>
+					<dt>Numéro du dossier:</dt> <dd> {{postulant.dossier.numero_dossier}} </dd>
+					<dt>Avancement:</dt> <dd> {{postulant.dossier.etat_traitement}} </dd>
+				</dl>
+			</div>
+		</div>
+		{% endif %}
+
+		{% if postulant.documentId %}
+		<h2 class="section">Document d'identification</h2>
+		<div class="row">
+			<div class="col-7">
+				<dl>
+					<dt>Type du document:</dt> <dd> {{postulant.documentId.type_doc}} </dd>
+					<dt>Numéro du document:</dt> <dd> {{postulant.documentId.numero_doc}} </dd>
+					<dt>Lieu d'établissement:</dt> <dd> {{postulant.documentId.lieu_etablissement}} </dd>
+					<dt>Date d'établissement:</dt> <dd> {{postulant.documentId.date_etablissement}} </dd>
+					<dt>Date d'expiration:</dt> <dd> {{postulant.documentId.date_expiration}} </dd>
+					<dt>Document d'identifiacation:</dt> <dd> {% if pieces_jointes.carteid_recto and pieces_jointes.carteid_verso %} <a href="#" id="recto" data-url = "{{pieces_jointes.carteid_recto.url}}" data-title = "Recto photo d'identité de {{postulant.nom|capfirst}} {{postulant.prenom|capfirst}}"> recto </a> - <a href="#" id="verso" data-url = "{{pieces_jointes.carteid_verso.url}}" data-title = "Verso photo d'identité de {{postulant.nom|capfirst}} {{postulant.prenom|capfirst}}"> verso </a> {% elif pieces_jointes.passeport %} <a href="#" id="passeport" data-url = "{{pieces_jointes.passeport.url}}" data-title = "Photo du passeport de {{postulant.nom|capfirst}} {{postulant.prenom|capfirst}}"> passeport </a> {% else %} aucun {% endif %} </dd>
+				</dl>
+			</div>
+		</div>
+		{% endif %}
+
+		{% if postulant.formation %}
+		<h2 class="section">Formation solicitée</h2>
+		<div class="row">
+			<div class="col-7">
+				<dl>
+					<dt>Unité de Formation et de Recherche:</dt> <dd> {{postulant.formation.ufr}} </dd>
+					<dt>Département:</dt> <dd> {{postulant.formation.dpt}} </dd>
+					<dt>Type de formation:</dt> <dd> {{postulant.formation.niveau|capfirst}} </dd>
+					{% if postulant.formation.niveau == 'master' %}
+					<dt>Formation solicité:</dt> <dd> {{postulant.formation.master.formation_master}} </dd>
+					{% elif postulant.formation.niveau == 'doctorat' %}
+					<dt>Thèse:</dt> <dd> {{postulant.formation.doctorat.these_doctorat}} </dd>
+					<dt>Directeur de thèse:</dt> <dd> {{postulant.formation.doctorat.directeur_these}} </dd>
+					{% endif %}
+				</dl>
+			</div>
+		</div>
+		{% endif %}
+
+		{% if univs %}
+		<h2 class="section">Parcours universitaire</h2>
+		<div class="row">
+			<div class="col-12">
+				<table width="100%">
+					<tr> <th>Année</th> <th>Établissment</th> <th>Niveau d'étude</th> <th> Formation suivie </th> <th>Semestre 1</th> <th>Semestre 2</th> <th>Diplôme</th> <th> Année obtention</th> </tr>
+				{% for univ in univs %}
+					<tr> <td> {{univ.annee_univ}} </td> <td> {{univ.etablissement_univ}} </td> <td> {{univ.niveau_etude}} </td> <td> {{univ.formation}} </td> <td> {{univ.moyenne_semestre1}} </td> <td> {{univ.moyenne_semestre2}} </td> <td> {{univ.etat_diplome}} </td> <td> {{univ.annee_obtention}} </td> </tr>
+				{% endfor %}
+				</table>				
+			</div>
+		</div>
+		{% endif %}
+
+		{% if stages %}
+		<h2 class="section">Stages effectués</h2>
+		<div class="row">
+			<div class="col-12">
+				<table width="100%">
+					<tr> <th>Année</th> <th>Lieu</th> <th>Thème</th> <th>Attestation</th> </tr>
+				{% for stage in stages %}
+					<tr> <td> {{stage.annee_stage}} </td> <td> {{stage.structure}} </td> <td> {{stage.theme}} </td> <td>
+						{% for a in attestation_stage %} {% if a.stage == stage %} <a href="#" class="att_stage" data-url = "{{a.attestation_stage.url}}" data-title = "Attestation de stage pour {{stage.structure}}">attestation</a> {% endif %} {% endfor %}
+					</td> </tr>
+				{% endfor %}
+				</table>
+			</div>
+		</div>
+		{% endif %}
+
+		{% if travail %}
+		<h2 class="section">Emplois exercés</h2>
+		<div class="row">
+			<div class="col-12">
+				<table width="100%">
+					<tr> <th>Année</th> <th>Entreprise</th> <th>Poste ocupé</th> <th>Attestation</th> </tr>
+				{% for job in travail %}
+					<tr> <td> {{job.annee_travail}} </td> <td> {{job.employeur}} </td> <td> {{job.poste}} </td> <td>
+						{% for a in attestation_travail %} {% if a.emploi == job %} <a href="#" class="att_job" data-url = "{{a.attestation_travail.url}}" data-title = "Attestation de travail pour {{job.employeur}}">attestation</a> {% endif %} {% endfor %}
+					</td> </tr>
+				{% endfor %}
+				</table>
+			</div>
+		</div>
+		{% endif %}
+
+		{% if autres %}
+		<h2 class="section">Autres occupations</h2>
+		<div class="row">
+			<div class="col-7">
+				<table width="100%">
+					<tr> <th>Année</th> <th>Entreprise</th> <th>Poste ocupé</th> <th>Attestation</th> </tr>
+				{% for autre in autres %}
+					<tr> <td> {{autre.annee_autre}} </td> <td> {{autre.structure}} </td> <td> {{autre.poste}} </td> <td>
+						{% for a in attestation_autre %} {% if a.emploi_autre == autre %} <a href="#" class="att_autre" data-url = "{{a.attestation_autre.url}}" data-title = "Attestation pour {{autre.structure}}">attestation</a> {% endif %} {% endfor %}
+					</td> </tr>
+				{% endfor %}
+				</table>
+			</div>
+		</div>
+		{% endif %}
+		<h2 class="section">Documents associés</h2>
+		<div class="row my-5 mb-5">
+				{% if pieces_jointes.diplome_bac %} <div class="col-3 col-sm-3 col-lg-3"> <img class="imga" width="50%" id="diplome_bac" src="{{pieces_jointes.diplome_bac.url}}" alt="diplome_bac" title="Diplôme du bacalauréat de {{postulant.nom|capfirst}} {{postulant.prenom|capfirst}}" data-url="{{pieces_jointes.diplome_bac.url}}" data-title="Diplôme du bacalauréat de {{postulant.nom|capfirst}} {{postulant.prenom|capfirst}}"> </div> {% endif %}
+				{% if pieces_jointes.attestation_licence %} <div class="col-3 col-sm-3 col-lg-3">  <img class="imga" width="50%" id="attestation_licence" src="{{pieces_jointes.attestation_licence.url}}" alt="attestation_licence" title="Attestation de Licence de {{postulant.nom|capfirst}} {{postulant.prenom|capfirst}}" data-url="{{pieces_jointes.attestation_licence.url}}" data-title="Attestation de Licence de {{postulant.nom|capfirst}} {{postulant.prenom|capfirst}}"> </div>  {% endif %}
+				{% if pieces_jointes.attestation_master %} <div class="col-3 col-sm-3 col-lg-3"> <img class="imga" width="50%" id="attestation_master" src="{{pieces_jointes.attestation_master.url}}" alt="attestation_master" title="Attestation de Master de {{postulant.nom|capfirst}} {{postulant.prenom|capfirst}}" data-url="{{pieces_jointes.attestation_master.url}}" data-title="Attestation de Master de {{postulant.nom|capfirst}} {{postulant.prenom|capfirst}}"> </div> {% endif %}
+				{% if pieces_jointes.curriculum_file %} <div class="col-3 col-sm-3 col-lg-3"> <object class="mr-4" data="{{pieces_jointes.curriculum_file.url}}" type="application/pdf" id="curriculum_file" title="Curriculum Vitae de {{postulant.nom|capfirst}} {{postulant.prenom|capfirst}}">curriculum</object> <button class="btn" id="agrandir" style="width: 5%;"> <img src="{% static 'img/ag.svg' %}" alt="agrandir" title="agrandir ce document" name="cv_{{postulant.nom|lower}}_{{postulant.prenom|lower}}"> </button> </div>  {% endif %}
+		</div>
+	{% else %}
+	Aucyne donnée
+	{% endif %}
+<div class="module">
+
+<div id="Modal" class="modal" style="display: none;">
+
+  	<!-- The Close Button -->
+	<span class="close">&times;</span>
+
+  	<!-- Modal Content (The Image) -->
+ 	<img class="modal-content" id="img">
+ 	<object class="modal-content2" id="pdf" width="100%" height="100%"></object>
+  	<!-- Modal Caption (Image Text) -->
+  	<div id="caption"></div>
+</div>
+
+
+<script type="text/javascript">
+	
+	function affiche_image(boutton) {
+		// body...
+		var modal = document.getElementById('Modal');
+		var img = document.getElementById("img");
+		var captionText = document.getElementById("caption");
+		var pdf = document.getElementById('pdf');
+		
+		pdf.style.display = 'none';
+		modal.style.display = "block";
+		img.style.display = 'block';
+    	img.src = boutton.dataset.url;
+    	captionText.innerHTML = boutton.dataset.title;
+	}
+
+	function affiche_pdf(boutton) {
+		// body...
+		var modal = document.getElementById('Modal');
+		var pdf = document.getElementById("pdf");
+		var captionText = document.getElementById("caption");
+		var img = document.getElementById("img");
+
+		img.style.display = 'none';
+		modal.style.display = "block";
+		pdf.style.display = 'block';
+    	pdf.data = boutton.data;
+    	pdf.type = boutton.type;
+    	pdf.name = boutton.name;
+    	captionText.innerHTML = boutton.title;
+	}
+
+
+	var recto = document.getElementById('recto');
+	if (recto)
+	{
+		recto.onclick = function(){
+		affiche_image(recto);
+		}
+	}
+
+	var verso = document.getElementById('verso');
+	if (verso)
+	{
+		verso.onclick = function(){
+		affiche_image(verso);
+		}
+	}
+
+	var photo_id = document.getElementById('photo_id');
+	if (photo_id)
+	{
+		photo_id.onclick = function(){
+			affiche_image(photo_id);
+		}
+	}
+	
+
+	var passeport = document.getElementById('passeport');
+	if (passeport)
+	{
+		passeport.onclick = function(){
+			affiche_image(passeport);
+		}
+	}
+
+	var diplome_bac = document.getElementById('diplome_bac');
+	if (diplome_bac)
+	{
+		diplome_bac.onclick = function(){
+			affiche_image(diplome_bac);
+		}
+	}
+
+	var attestation_master = document.getElementById('attestation_master');
+	if (attestation_master)
+	{
+		attestation_master.onclick = function(){
+			affiche_image(attestation_master);
+		}
+	}
+
+	var attestation_licence = document.getElementById('attestation_licence');
+	if (attestation_licence)
+	{
+		attestation_licence.onclick = function(){
+			affiche_image(attestation_licence);
+		}
+	}
+
+	var att_stage = document.getElementsByClassName('att_stage');
+	if (att_stage)
+	{
+		att_stage.onclick = function(){
+			affiche_image(att_stage);
+		}
+	}
+
+	var att_job = document.getElementsByClassName('att_job');
+	if (att_job)
+	{
+		att_job.onclick = function(){
+			affiche_image(att_job);
+		}
+	}
+
+	var att_autre = document.getElementsByClassName('att_autre');
+	if (att_autre)
+	{
+		att_autre.onclick = function(){
+			affiche_image(att_autre);
+		}
+	}
+
+	var agrandir = document.getElementById('agrandir');
+	var curriculum_file = document.getElementById('curriculum_file');
+	if (curriculum_file && agrandir)
+	{
+		agrandir.onclick = function(){
+			affiche_pdf(curriculum_file);
+		}
+	}
+
+	var modal = document.getElementById('Modal');
+	modal.onclick = function(){
+		modal.style.display = 'none';
+	}
+	
+	var span = document.getElementsByClassName("close")[0];
+	span.onclick = function() {
+  		modal.style.display = "none";
+	}
+
+	
+</script>
+{% endblock %}

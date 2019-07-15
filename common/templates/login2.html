@@ -1,0 +1,183 @@
+{% load staticfiles %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+<style type="text/css">
+
+  form {
+    border: 3px solid #f1f1f1;
+    background-color: #f5f5f5;
+  }
+
+
+  input[type=text], input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+
+  .container {
+    padding: 16px;
+  }
+
+
+  .imgcontainer {
+    text-align: center;
+    margin: 24px 0 12px 0;
+  }
+
+
+  img.avatar {
+    width: 25%;
+    border-radius: 10%;
+    background-color: #fff;
+  }
+
+
+  span.psw {
+    float: right;
+    padding-top: 16px;
+  }
+
+  @media screen and (max-width: 300px) {
+    span.psw {
+      display: block;
+      float: none;
+    }
+}
+
+
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 17%;
+    top: 0;
+    width: 83%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.4); 
+    padding-top: 60px;
+  }
+
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 5px auto; 
+    border: 1px solid #888;
+    width: 50%; 
+}
+
+
+.close {
+    position: absolute;
+    right: 20%;
+    top: 1.5em; 
+    color: #000;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+
+.close:hover,
+.close:focus {
+    color: red;
+    cursor: pointer;
+}
+
+
+.animate {
+    -webkit-animation: animatezoom 0.6s;
+    animation: animatezoom 0.6s
+}
+
+@-webkit-keyframes animatezoom {
+    from {-webkit-transform: /*rotate(0deg)*/scale(0)}
+    to {-webkit-transform: /*rotate(360deg)*/scale(1)}
+}
+
+@keyframes animatezoom {
+    from {transform: /*rotate(0deg)*/scale(0)} 
+    to {transform: /*rotate(360deg)*/scale(1)}
+}
+</style>
+
+<div id="id01" class="modal">
+  <span id="cl" class="close" title="Close Modal">&times;</span>
+
+  <div class="modal-content animate">
+
+    <div class="imgcontainer">
+      <div>
+        <img src="{% static 'img/logo1.png' %}" alt="logo_uo" class="avatar">
+      </div>
+      <div>
+        <div style="font-family: Consolas; font-size: 2.5em;text-shadow: 4px 1px lightblue;"> Connexion - sidinfor </div>
+      </div>
+    </div>
+
+    <form  action="{% url 'login' %}" method="post">
+      {% csrf_token %}
+    <div class="container">
+      {% if info %}
+        <ul class="errorlist" id="errorlist"> <li> {{info}} </li> </ul>
+      {% endif %}
+      {% crispy form %}
+    <!-- <label>
+        <input type="checkbox" checked="checked" name="remember"> Remember me
+      </label> -->
+    </div>
+
+    <div class="container" style="background-color:#fff; ">
+      <button type="button" id="clb" class="btn btn-danger">Annuler</button>
+      <span class="psw">
+        <span class="mr-3" style="text-decoration: underline;"><a href="#">Mot de passe oublié?</a></span>
+        <span style="text-decoration: underline;"><a href="{% url 'inscription' %}">Créer un compte?</a></span>
+      </span>
+    </div>
+  </form> 
+  </div>
+</div>
+
+<script type="text/javascript" src="{% static 'js/jquery-3.3.1.min.js' %}" crossorigin="anonymous"></script>
+<script type="text/javascript">
+
+  $(document).ready(function() {
+      // body...
+    $('#id_pseudo').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
+    $('#id_password').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
+
+    var cl = document.getElementById('cl');
+    var clb = document.getElementById('clb');
+    var modal = document.getElementById('id01');
+    window.onclick = function(event) {
+      if ((event.target == modal) || (event.target == cl) || (event.target == clb)) {
+        modal.style.display = "none";
+      }
+    }
+
+    var errorlist = document.getElementById('errorlist');
+    if (errorlist.innerHTML != '')
+    {
+      modal.style.display = "block";
+    }
+
+    var inputPass = document.getElementById('id_password');
+    var text = document.getElementById('avert');
+    inputPass.addEventListener("keyup", function(event) {
+
+    if (event.getModifierState("CapsLock")) {
+      text.style.display = "block";
+    }
+    else {
+      text.style.display = "none";
+    }
+  });
+
+ }) 
+</script>
+
+

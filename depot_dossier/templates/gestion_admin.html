@@ -1,0 +1,34 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+{% load staticfiles %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &rsaquo;
+    Gestion & Suivi
+    </div>
+{% endblock %}
+
+{% block content %}
+
+<div class="module">
+<table width="100%">
+    <caption>
+        <a href="{% url 'admin:gestion' %}" class="section" title=""> Gestion & Suivi des stages </a>
+    </caption>
+
+    <tr> <th scope="row"> <a href="{% url 'admin:etat_stages' 'Licence 3' %}"> Stages licence </a> </th> </tr>
+    <tr> <th scope="row"> <a href="{% url 'admin:etat_stages' 'Master 2' %}"> Stages master </a> </th> </tr>
+</table>
+
+<table width="100%">
+    <caption>
+        <a href="{% url 'admin:gestion' %}" class="section" title=""> Gestion des recrutements </a>
+    </caption>
+
+    <tr> <th scope="row"> <a href="{% url 'admin:gestion' 'master' %}"> Recrutements master </a> </th> </tr>
+    <tr> <th scope="row"> <a href="{% url 'admin:gestion' 'doctorat' %}"> Recrutements doctorat </a> </th> </tr>
+
+</table>
+</div>
+{% endblock %}

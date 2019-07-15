@@ -1,6 +1,6 @@
 function script(){
 	// body...
-	$('#id_etud-dateNaissance').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
+	$('#id_etud-date_naissance').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
 	$('#id_etud-numTel').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
 	$('#id_etud-nom').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
 	$('#id_etud-sexe').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
@@ -10,7 +10,7 @@ function script(){
 	$('#id_etud-password').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
 	$('#id_etud-dPassword').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
 
-	$('#id_post-dateNaissance').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
+	$('#id_post-date_naissance').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
 	$('#id_post-nom').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
 	$('#id_post-sexe').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
 	$('#id_post-pays').popover({delay: {show: 500, hide: 200}, trigger: 'hover'});
@@ -46,13 +46,13 @@ function script(){
 	$('#typeProfile').change(displayRightForm);
 
 	$('#id_ufr').change(function(){
-		departement($(this).val(), $('#id_niveaux').val());});
+		departement($(this).val(), $('#id_niveau').val());});
 	
-	$('#id_dpts').change(function(){
-		formation($(this).val(), $('#id_niveaux').val());});
+	$('#id_dpt').change(function(){
+		formation($(this).val(), $('#id_niveau').val());});
 
-	$('#id_niveaux').change(function(){
-			formation($('#id_dpts').val(), $(this).val());});
+	$('#id_niveau').change(function(){
+			formation($('#id_dpt').val(), $(this).val());});
 }
 
 
@@ -78,15 +78,17 @@ function displayRightForm() {
 function verification(type, valeur, prefix){
 	// body...
 	$.get({
-		url: '../verification',
+		url: '/ajax/verification/',
 		//url: '{% url verification %}',
 		data: {'type': type, 'valeur': valeur},
 		dataType: 'json',
 		success: function(code_json, statut){
-			var classe = null;
+			if (code_json.erreur) throw code_json.erreur;
+
+			var classe = null, message = null;
 			if (code_json.statut == 'erreur') classe = 'bg-danger';
-			else classe = 'bg-warning';
-			var message = null
+			else if (code_json.statut == 'warning') classe = 'bg-warning';
+			
 			if (type == 'email'){
 				message = "<p class='"+classe+" email' style='text-align:center;'>"+code_json.message+"<p>";
 				$('#div_id_'+prefix+'-email').parent().children('p.email').remove();
@@ -105,12 +107,15 @@ function verification(type, valeur, prefix){
 function departement(ufr, niveau) {
 	// body...
 	$.get({
-		url: '../changer_departement',
+		url: '/ajax/changer_departement/',
 		data: {'ufr': ufr, 'niveau': niveau},
 		dataType: 'json',
 		success : function(code_json, statut){
+
+			if (code_json.erreur) throw code_json.erreur;
+
 			var departement_json = JSON.parse(code_json.departement), formation_json = JSON.parse(code_json.formation);
-			var departement = $('#id_dpts'), formation = $('#id_formation')
+			var departement = $('#id_dpt'), formation = $('#id_formation')
 
 			departement.empty();
 			departement.append('<option value="" selected>--------</option>');
@@ -135,18 +140,19 @@ function departement(ufr, niveau) {
 function formation(dpt, niveau) {
 	// body...
 	$.get({
-		url: '../changer_formation',
+		url: '/ajax/changer_formation/',
 		data: {'dpt': dpt, 'niveau': niveau},
 		dataType: 'json',
 		success : function(code_json, statut){
-			if (niveau == 'Master'){
-				var formation_json = JSON.parse(code_json.formation), formation = $('#id_formation')
-				formation.empty(); formation.append('<option value="" selected>--------</option>');
-				for (var i = 0; i < formation_json.length; i++) {
-					formation.append('<option value="'+formation_json[i].pk+'">'+formation_json[i].fields.formation_master+'</option>');
-				}
-			}
 
+			if (code_json.erreur) throw code_json.erreur;
+
+			if (niveau == 'master'){
+				$('#div_id_formation').replaceWith(code_json.formation);
+			}
+			else if (niveau == 'doctorat'){
+				$('#div_id_formation').replaceWith(code_json.formation);
+			}
 		},
 		error: function(resultat, statut, erreur){
 			console.log(erreur);
