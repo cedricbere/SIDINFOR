@@ -1,0 +1,12 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+{% load staticfiles %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &rsaquo;
+    <a href="{% url 'admin:gestion' %}"> Gestion & Suivi </a> &rsaquo;
+    <a href="{% url 'admin:gestion' %}"> État des stage {{niveau}} </a> &rsaquo;
+    Fiche stages de {{}} {{}}
+    </div>
+{% endblock %}

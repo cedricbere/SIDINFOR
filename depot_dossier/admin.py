@@ -1,19 +1,26 @@
-from django.contrib import admin
-from depot_dossier.models import Postulant, DocumentId, Master, Dossier, Doctorat, Formation, Scolaire, Professionnel, Autre, Fichiers,\
-    Universitaire, Stage, UserCode
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
+
+from common.admin import site_admin
+from depot_dossier.models import Master, Etablissement#, Postulant, DocumentId, Dossier, Doctorat, Formation, Professionnel, Autre, Fichiers,\
+    #Universitaire, Stage, UserCode, AttestationAutre, AttestationStage, AttestationTravail
 
 # Register your models here.
 
-admin.site.register(Master)
-admin.site.register(Formation)
-admin.site.register(Doctorat)
-admin.site.register(Postulant)
-admin.site.register(Dossier)
-admin.site.register(DocumentId)
-admin.site.register(Scolaire)
-admin.site.register(Universitaire)
-admin.site.register(Professionnel)
-admin.site.register(Autre)
-admin.site.register(Fichiers)
-admin.site.register(Stage)
-admin.site.register(UserCode)
+site_admin.register(Master)
+site_admin.register(Etablissement)
+#site_admin.register(Formation)
+#site_admin.register(Doctorat)
+#site_admin.register(Postulant)
+#site_admin.register(Dossier)
+#site_admin.register(DocumentId)
+#site_admin.register(Scolaire)
+#site_admin.register(Universitaire)
+#site_admin.register(Professionnel)
+#site_admin.register(Autre)
+#site_admin.register(Fichiers)
+#site_admin.register(Stage)
+#site_admin.register(UserCode)
+#site_admin.register(AttestationAutre)
+#site_admin.register(AttestationStage)
+#site_admin.register(AttestationTravail)

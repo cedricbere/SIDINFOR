@@ -49,8 +49,8 @@
         <div class="bd-toc-item" id="drapport">
           <a class="bd-toc-link" href="#" id="lienRapport"> Rapport </a>
           <ul class="nav bd-sidenav navbar">
-            <li class="" id="lien1"> <a href="{% url 'depot_rapport:tous_rapports' %}"> Consulter un {% if user.niveau.nom_classe == "Licence 3" %} rapport {% elif user.niveau.nom_classe == "Master 2" %} mémoire {% endif %} </a>  </li>
-            <li class=""> <a href="{% url 'depot_rapport:mes_rapports' %}"> Consulter mes {% if user.niveau.nom_classe == "Licence 3" %} rapports {% elif user.niveau.nom_classe == "Master 2" %} mémoires {% endif %} </a>  </li>
+            <li class="" id="lien1"> <a href="{% url 'depot_rapport:tous_rapports' %}"> Consulter un {% if user.classe.nom_classe == "Licence 3" %} rapport {% elif user.classe.nom_classe == "Master 2" %} mémoire {% endif %} </a>  </li>
+            <li class=""> <a href="{% url 'depot_rapport:mes_rapports' %}"> Consulter mes {% if user.classe.nom_classe == "Licence 3" %} rapports {% elif user.classe.nom_classe == "Master 2" %} mémoires {% endif %} </a>  </li>
            <li class=""> <a href="{% url 'depot_rapport:depotrapport' %}"> Ajout un nouveau stage</a> </li> 
           </ul>      
         </div>
@@ -63,7 +63,7 @@
           </ul>   
         </div>
 
-      {% if user.niveau.nom_classe == "Licence 3" %}
+      {% if user.classe.nom_classe == "Licence 3" %}
         <div class="bd-toc-item" id="inscription">
           <a class="bd-toc-link" href="#" id="lienInscription">Inscription</a>
           <ul class="nav bd-sidenav navbar">

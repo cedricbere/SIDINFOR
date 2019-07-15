@@ -1,7 +1,8 @@
-{% extends "base2test.html" %}
+{% extends "base2.html" %}
 {% load staticfiles %}
 {% block autreCSS %}
-	<link rel="stylesheet" type="text/css" href="{% static 'css/liste_table.css' %}"/> 
+	<link rel="stylesheet" type="text/css" href="{% static 'css/liste_table.css' %}"/>
+	{{ stages.media.css }}
 {% endblock %}
 {% block title %}Consulter mes rapports{% endblock %}
 {% block bodyId %}mesRapport{% endblock %}
@@ -31,28 +32,28 @@
 					<dd>{{stage.stagiaire.prenom|capfirst}} {{stage.stagiaire.nom|capfirst}} </dd>
 
 					<dt> Maître de stage: </dt>
-					<dd>{{stage.maitreStage|title}} </dd>
+					<dd>{{stage.maitre_stage|title}} </dd>
 
 					<dt> Superviseur: </dt>
-					<dd>{{stage.superviseur|title}} </dd>
+					<dd>{{stage.superviseur_stage|title}} </dd>
 
 					<dt> Lieu: </dt>
-					<dd>{{stage.lieu}} </dd>
+					<dd>{{stage.lieu_stage}} </dd>
 
 					<dt>État d'avancement: </dt>
-					<dd> {{stage.etat}} </dd>
+					<dd> {{stage.etat_stage}} </dd>
 				{% if stage.rapport %}
 					<dt>Thème: </dt>
 					<dd> {{stage.rapport.theme}} </dd>
 
 					<dt>Mots Clés: </dt>
-					<dd> {{stage.rapport.motsCle}} </dd>
+					<dd> {{stage.rapport.mots_cles}} </dd>
 
 					<dt>Résumé: </dt>
 					<dd> {{stage.rapport.resume}} </dd>
 
 					<dt> Date de chargement du rapport: </dt>
-					<dd> {{stage.rapport.dat_premierChargement|date:"l, d F Y"}} </dd>
+					<dd> {{stage.rapport.date_premier_chargement|date:"l, d F Y H:i:s"}} </dd>
 
 					<dt>Date de dernière modification: </dt>
 					<dd> {{stage.rapport.date_modification|date:"l, d F Y H:i:s"}} </dd>
@@ -61,7 +62,7 @@
 				{% endif %}
 				{% if stage.soutenance %}
 					<dt>Date de Soutenance: </dt>
-					<dd>{% if not stage.soutenance.dateEffective %} {{stage.soutenance.datePrevu|date:"l, d F Y"}} {% else %} {{stage.soutenance.dateEffective|date:"l, d F Y"}} {% endif %}</dd>
+					<dd>{% if not stage.soutenance.datee_ffective %} {{stage.soutenance.date_prevue|date:"l, d F Y"}} {% else %} {{stage.soutenance.date_effective|date:"l, d F Y"}} {% endif %}</dd>
 
 					<dt>Salle: </dt>
 					<dd> {{stage.soutenance.salle}}</dd>
@@ -80,6 +81,20 @@
 				</dl>
 			</td> </tr>
 		</table>
+		<div class="pagination">
+    		<span class="step-links">
+        		{% if stages.has_previous %}
+            	<a href="?page=1">&laquo; first</a>
+            	<a href="?page={{ stages.previous_page_number }}">previous</a>
+        		{% endif %}
+
+        		<span class="current"> Page {{ stages.number }} sur {{ stages.paginator.num_pages }}.  </span>
+        		{% if stages.has_next %}
+            	<a href="?page={{ stages.next_page_number }}">next</a>
+            	<a href="?page={{ stages.paginator.num_pages }}">last &raquo;</a>
+        		{% endif %}
+    		</span>
+		</div>
 	{% empty %}
 		<p class="errorlist"> Vous n'avez uploadé aucun stage. </p>
 		<p> <a href="{% url 'accueil' %}"> Ratour à l'accueil </a> </p>

@@ -1,47 +1,24 @@
 {% load staticfiles %}
 <div id="carousel" class="carousel slide" data-ride="carousel">
 	<ol class="carousel-indicators">
-        <li data-target="#carousel" data-slide-to="0" class="active"></li>
-        <li data-target="#carousel" data-slide-to="1"></li>
-        <li data-target="#carousel" data-slide-to="2"></li>
+	{% for image in images_carousel %}
+        <li data-target="#carousel" data-slide-to="{{forloop.counter0}}" class="{% if forloop.first %} active {% endif %}"></li>
+	{% empty %}
+	{% endfor %}
     </ol>
 	<div class="carousel-inner">
-
-		<div class="carousel-item active">
-			<div class="first-slide"> Première image du slide </div>  <!-- Cette balise div sera remplacée par la balise img -->
-			<div class="container">
-				<div class="carousel-caption"> <p> Premier slide </p> </div>
-				<div class="text-left">
-					<p>Ceci est le premier slide du carrousel.</p>
-					<p>Ceci est le premier slide du carrousel.</p>
-					<p>Ceci est le premier slide du carrousel.</p>
+	{% for image in images_carousel %}
+		<div class="carousel-item {% if forloop.first %} active {% endif %}">
+			<div class="">
+				<img src = "{{ image.image_path.url }}" alt = "{{image.nom_carousel}}" title = "{{image.nom_carousel}}" style = "height: 15em; width: 100%;"/>
+				<div class="carousel-caption text-center">
+					<p> {% if image.adresse_web %} <a href = "{{image.adresse_web}}"> {{image.description_image}} </a> {% else %} {{image.description_image}} {% endif %} </p>
 				</div>
+				
 			</div>
 		</div>
-
-		<div class="carousel-item">
-			<div class="second-slide"> Deuxième image du slide </div> <!-- Cette balise div sera remplacée par la balise img -->
-			<div class="container">
-				<div class="carousel-caption"> <p> Deuxième slide </p> </div>
-				<div class="text-center">
-					<p>Ceci est le second slide du carrousel.</p>
-					<p>Ceci est le second slide du carrousel.</p>
-					<p>Ceci est le second slide du carrousel.</p>
-				</div>
-			</div>
-		</div>
-
-		<div class="carousel-item">
-			<div class="third-slide"> Troisième image du slide </div> <!-- Cette balise div sera remplacée par la balise img -->
-			<div class="container">
-				<div class="carousel-caption"> <p> Troisième slide </p> </div>
-				<div class="text-right">
-					<p>Ceci est le troisième slide du carrousel.</p>
-					<p>Ceci est le troisième slide du carrousel.</p>
-					<p>Ceci est le troisième slide du carrousel.</p>
-				</div>
-			</div>
-		</div>
+	{% empty %}
+	{% endfor %}
 
 	</div>
 	<a class="carousel-control-prev" href="#carousel" role="button" data-slide="prev">

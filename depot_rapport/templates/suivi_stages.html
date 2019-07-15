@@ -1,0 +1,47 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+{% load staticfiles %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &rsaquo;
+    <a href="{% url 'admin:gestion' %}"> Gestion & Suivi </a> &rsaquo;
+    État des stage {{niveau}}
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="module">
+<table border="1" width="100%">
+	<caption> État des stages {{niveau}} </caption>
+	<tr>
+		<th align="center">Matricule</th>
+		<th align="center">Nom</th>
+		<th align="center">Prénom</th>
+		<th align="center">Etat stage</th>
+		<th align="center">Thème stage</th>
+		<th align="center">Superviseur</th>
+		<th align="center">Maître de stage</th>
+		<th align="center">Date de soutenance</th>
+		<th align="center">Information</th>
+	</tr>
+	{% for d in donnees %}
+	<tr>
+		<td align="center">{{d.matricule}}</td>
+		<td align="center">{{d.nom}}</td>
+		<td align="center">{{d.prenom}}</td>
+		<td align="center"> {{d.etat_stage}}</td>
+		<td align="center">{{d.theme}}</td>
+		<td align="center">{{d.superviseur_stage}}</td>
+		<td align="center">{{d.maitre_stage}}</td>
+		<td align="center"> {{d.date_prevue}} </td>
+		<td align="center"> <a href="#"> plus d'info... </a> </td>
+	</tr>
+	{% empty %}
+	<tr>
+		<td colspan="10" align="center">Aucun élément trouvé</td>
+	</tr>
+	{% endfor %}
+</table> 
+</div>
+{% endblock %}

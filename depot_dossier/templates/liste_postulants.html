@@ -1,0 +1,48 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+{% load staticfiles %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &rsaquo;
+    <a href="{% url 'admin:gestion' %}"> Gestion & Suivi </a> &rsaquo;
+    {% if liste_postulant %}
+    Liste des candidats {{niveau}}
+    {% endif %}
+    </div>
+{% endblock %}
+
+{% block content %}
+
+{% if liste_postulant %}
+<div class="module">
+<table border="1" width="100%">
+	<caption>Liste postulant {{niveau}} </caption>
+	<tr>
+		<th align="center" scope="row">ID</th> <th align="center" scope="row">Nom</th> <th align="center" scope="row">Prénom</th> <th align="center" scope="row">Date de naissance</th> <th align="center" scope="row">Lieu de naissance</th> <th align="center" scope="row">N. dossier</th> <th align="center" scope="row">Date de dépot</th> <th>Informations</th> <th>Selection</th>
+	</tr>
+	<form action="{% url 'admin:liste_definitive' niveau %}" method="post">
+		{% csrf_token %}
+		{% for postulant in liste_postulant %}
+		<tr>
+			<td align="center"> {{postulant.id}} </td> <td align="center">{{postulant.nom}}</td> <td align="center">{{postulant.prenom}}</td> <td align="center">{{postulant.date_naissance}}</td> <td align="center">{{postulant.lieu_naissance}}</td> <td align="center">{{postulant.dossier.numero_dossier}}</td> <td align="center">{{postulant.dossier.date_inscription}}</td>
+			<td align="center"> <a href="{% url 'admin:fiche_personnelle' niveau postulant.id %}"> plus d'info... </a> </td>
+			<td align="center"> <input type="checkbox" name="post_{{postulant.id}}" value="{{postulant.id}}"> </td>
+		</tr>
+		{% empty %}
+		<tr>
+			<td colspan="9" align="center"> <h5> Aucun élément trouvé </h5> </td>
+		</tr>
+		{% endfor %}
+		<input type="submit" value="Produire la liste définitive">
+		
+	</form>
+</table>
+
+<button class="button"> <a href="{% url 'admin:fichier_excel' niveau %}"> Fichier Excel </a> </button>
+<button class="button"> <a href="{% url 'admin:reinitialiser' niveau %}"> Réinitialiser </a> </button>
+</div>
+{% else %}
+Aucune donnée
+{% endif %}
+{% endblock %}

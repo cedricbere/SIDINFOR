@@ -1,4 +1,4 @@
-{% extends "base2test.html" %}
+{% extends "base2.html" %}
 {% load staticfiles %}
 {% block autreCSS %}
 	<link rel="stylesheet" type="text/css" href="{% static 'css/profile.css' %}"/>
@@ -28,7 +28,7 @@
 			<dd> {{user.prenom}} </dd>
 
 			<dt>Date de naissance : </dt>
-			<dd> {{user.dateNaissance}} </dd>
+			<dd> {{user.date_naissance}} </dd>
 
 			<dt>Tél mobile : </dt>
 			<dd>{{user.numTel}}</dd>

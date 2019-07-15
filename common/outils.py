@@ -1,60 +1,70 @@
-# -*- conding:utf8 -*-
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
+
+
 '''
 Created on 9 oct. 2018
 
 @author: parice02
 '''
 # Ce fichier contient toute fonction du project qui n'est pas une vue, un modèle ou autre module django.
+# Ces fonctions permettent 
 
 from secrets import choice
 from string import ascii_letters, digits
 from django.core.mail import EmailMultiAlternatives, mail_admins
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 
-def envoyer_mail_admins(inscrit = '', mail_envoye = ''):
-    if inscrit.type_personne == None:
-        raise ValueError("%s n'est pas de type Personne")
+# Proposition de django
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
 
-    sujet = 'Nouvelle inscription'
-    contenu_texte = str(
-        "Une nouvelle inscription\n"+
-        "Prénom et Nom: %s\n"+
-        "email: %s\n"+
-        "Date d'inscription: %s\n"+
-        "Régime: %s\n"+
-        "Statut du mail envoyé: %s") %(inscrit.prenom+' '+inscrit.nom, inscrit.compte.email,
-                                       inscrit.compte.date_joined.strftime('%A, %d %B %Y %H:%M:%S'), inscrit.type_personne, str(mail_envoye))
+
+def envoyer_mail_admins(type_mail = '', inscrit = '', mail_envoye = ''):
+    if not inscrit.type_personne:
+        raise ValueError("%s n'est pas de type Personne" % (None))
     
-    contenu_html = str('')
+    sujet = 'Nouvelle inscription'
+    contenu_html = render_to_string(template_name = 'envoi_mail.html', context = {'type_mail': type_mail, 'regime': 'admin', 'identite': inscrit.prenom+' '+inscrit.nom,
+            'email': inscrit.compte.email, 'date_inscription': inscrit.compte.date_joined.strftime('%A, %d %B %Y %H:%M:%S'),
+            'type': inscrit.type_personne, 'statut': mail_envoye})
+
+    contenu_texte = strip_tags(contenu_html)
     
     mail_admins(subject = sujet, message = contenu_texte, html_message = contenu_html)
 
 
-def envoyer_mail(regime = '', inscrit = '', code = ''):
+def envoyer_mail(type_mail = '', regime = '', inscrit = '', code = ''):
     """
     Permet l'envoi de mail à un utilisateur nouvellement inscrit.
     """
-    if (regime == None or regime == '') and (inscrit == None or inscrit == '') and (code == None):
+    if (regime == None or regime == '') and (inscrit == None or inscrit == ''):
         raise ValueError('Veuillez bien reseigner les valeurs des arguments')
+    
+    if regime == 'Postulant':
+        if (type_mail == 'inscription') and (code == None or code == ''):
+            raise ValueError("Impossible d'envoyer ce mail sans code d'activation")
 
-    if inscrit.email == None:
+    if not inscrit.email:
         raise ValueError("%s n'est pas de type django.contrib.auth.models.User")
 
     sujet, destinataire, envoyeur = 'Inscription sur SIDINFOR', inscrit.email, 'parice02@hotmail.com'
     contenu_texte, contenu_html = '', ''
 
     if regime == 'Etudiant':
-        contenu_texte = str(
-        "Vous recevez ce mail suite à votre inscription sur la plateforme SIDINFOR en tant qu'étudiant.\n"+
-        "Vontre identité sera vérifié avant l'activation de votre compte.\n"+
-        "\t\tMerci de Patienter. Cordialement.")
-        contenu_html = str('')
+        contenu_html = render_to_string(template_name = 'envoi_mail.html', context = {'type_mail': type_mail, 'regime': 'étudiant'})
+        contenu_texte = strip_tags(contenu_html)
+         
     elif (regime == 'Postulant') and (code != ''):
-        contenu_texte = str(
-        "Vous recevez ce mail suite à votre inscription sur la plateforme SIDINFOR en tant que postulant .\n"+
-        "Veuillez suivre ce lien http://localhost:8000/depot_dossier/activation_compte/%s/%s pour activation automatique de votre compte."+
-        "\t\tCordialement.") % (inscrit.username, code)
-        contenu_html = str('')
+        contenu_html = render_to_string(template_name = 'envoi_mail.html', context = {'type_mail': type_mail, 'regime': 'postulant', 'user_name': inscrit, 'code': code})
+        contenu_texte = contenu_html
     else:
         raise ValueError("Ce régime: '%s' n'est pas pris en compte." % (regime,))
         
@@ -71,6 +81,12 @@ def sauver_fichier(file_path, file):
         for chunck in file.chunks():
             destionaion.write(chunck)
             
+def chemin_sauvegarde_carousel(instance, filename):
+    """
+    """
+    return "carousel/{0}".format(filename)
+
+
 
 def chemin_sauvegarde_rapport(instance, filename):
     """
@@ -79,7 +95,7 @@ def chemin_sauvegarde_rapport(instance, filename):
     nom = instance.auteur.nom
     prenom = instance.auteur.prenom
     matricule = instance.auteur.matricule
-    return 'depot_rapport/static/uploads/rapport_{0}/{1}'.format(matricule+'_'+prenom.lower()+'_'+nom.lower(), filename)
+    return 'uploads/rapport_stages/rapport_{0}/{1}'.format(matricule+'_'+prenom.lower()+'_'+nom.lower(), filename)
 
 
 
@@ -89,19 +105,41 @@ def chemin_sauvegarde_fichier(instance, filename):
     """
     nom = instance.postulant.nom
     prenom = instance.postulant.prenom
+    niveau = instance.postulant.formation.niveau
     num_dos = instance.postulant.dossier.numero_dossier
-    return 'depot_rapport/static/uploads/dossier_{0}/{1}'.format(num_dos+'_'+prenom+'_'+nom, filename)
+    return 'uploads/recrutement/{0}/dossier_{1}/{2}'.format(niveau, num_dos+'_'+prenom+'_'+nom, filename)
 
 
 
-def chemin_sauvegarde_attestation(instance, filename):
+def chemin_sauvegarde_attestation_stage(instance, filename):
     """
     Chemin racine pour la sauvegarde d'un document relatif à un postulant dans un dossier portant son nom.
     """
-    nom = instance.emploi.employe.nom or instance.stage.stagiaire.nom
-    prenom = instance.emploi.employe.prenom or instance.stage.stagiaire.prenom
-    num_dos = instance.emploi.employe.dossier.numero_dossier or instance.stage.stagiaire.dossier.numero_dossier
-    return 'depot_rapport/static/uploads/dossier_{0}/{1}'.format(num_dos+'_'+prenom+'_'+nom, filename)
+    nom = instance.stage.stagiaire.nom
+    prenom = instance.stage.stagiaire.prenom
+    niveau = instance.stage.stagiaire.formation.niveau
+    num_dos = instance.stage.stagiaire.dossier.numero_dossier
+    return 'uploads/recrutement/{0}/dossier_{1}/{2}'.format(niveau, num_dos+'_'+prenom+'_'+nom, filename)
+
+def chemin_sauvegarde_attestation_travail(instance, filename):
+    """
+    Chemin racine pour la sauvegarde d'un document relatif à un postulant dans un dossier portant son nom.
+    """
+    nom = instance.emploi.employe.nom
+    prenom = instance.emploi.employe.prenom
+    niveau = instance.emploi.employe.formation.niveau
+    num_dos = instance.emploi.employe.dossier.numero_dossier
+    return 'uploads/recrutement/{0}/dossier_{1}/{2}'.format(niveau, num_dos+'_'+prenom+'_'+nom, filename)
+
+def chemin_sauvegarde_attestation_autre(instance, filename):
+    """
+    Chemin racine pour la sauvegarde d'un document relatif à un postulant dans un dossier portant son nom.
+    """
+    nom = instance.emploi_autre.employe.nom
+    prenom = instance.emploi_autre.employe.prenom
+    niveau = instance.emploi_autre.employe.formation.niveau
+    num_dos = instance.emploi_autre.employe.dossier.numero_dossier
+    return 'uploads/recrutement/{0}/dossier_{1}/{2}'.format(niveau, num_dos+'_'+prenom+'_'+nom, filename)
 
 
 
@@ -126,8 +164,7 @@ def formater(entier, val_max = 1):
 
 
       
-# Le code généré doit être envoiyer à l'utilisateur pour lui permettre d'activer son compte de façon automatique.
-# Fonction non utilisé
+# Le code généré est envoiyé à l'utilisateur (Postulant) pour lui permettre d'activer son compte de façon automatique.
 def generateur_code():
     """
     Retourne 8 caractères tirés au hasard parmi les lettres ASCII et les 10 chiffres.

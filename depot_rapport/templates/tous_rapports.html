@@ -48,8 +48,8 @@
 						<dd> {{stage.rapport.resume|truncatewords:100}} </dd>
 
 
-						<dt> Rapport uploadé: </dt>
-						<dd>  <a href="" download="rapport_{{stage.stagiaire.prenom}}_{{stage.stagiaire.nom}}_{{stage.lieu}}_{{stage.rapport.annee_academique}}"> Télécharger </a> </dd>
+						<dt> Rapport de stage: </dt>
+						<dd>  <a href="{% url 'depot_rapport:telecharger_rapport' stage.rapport.id %}" download=""> Télécharger </a> </dd>
 					{% else %}
 						<p> Aucun rapport n'a été sauvegardé pour ce stage</p>
 					{% endif %}
@@ -68,6 +68,20 @@
 					</dl>
 				</td> </tr>
 			</table>
+			<div class="pagination">
+    			<span class="step-links">
+        			{% if stages.has_previous %}
+            		<a href="?page=1">&laquo; first</a>
+            		<a href="?page={{ stages.previous_page_number }}">previous</a>
+        			{% endif %}
+
+        			<span class="current"> Page {{ stages.number }} sur {{ stages.paginator.num_pages }}.  </span>
+        			{% if stages.has_next %}
+            		<a href="?page={{ stages.next_page_number }}">next</a>
+            		<a href="?page={{ stages.paginator.num_pages }}">last &raquo;</a>
+        			{% endif %}
+    			</span>
+			</div>
 		{% empty %}
 			<p class="errorlist"> Vous n'avez uploadé aucun stage. </p>
 			<p> <a href="{% url 'accueil' %}"> Retour à l'accueil </a> </p>

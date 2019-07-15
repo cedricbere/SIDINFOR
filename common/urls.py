@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
+
 """Stage URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -15,25 +18,35 @@ Including another URLconf
 """
 
 from django.urls import path, include
-from django.contrib import admin
+from django.conf.urls.static import static
+
+#from django.template.loader import get_template
+from common import settings
+from common.admin import site_admin
 from common.views import login, inscription, accueil, profile, deconnexion, programmes, modifierProfile,\
-     ajax_changer_departement, ajax_changer_formation, ajax_verification
+     ajax_changer_departement, ajax_changer_formation, ajax_verification, index, programmes_pdf, login_2
+
+from wkhtmltopdf.views import PDFTemplateView
 
 app_name = 'common'
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    #path('', index, name = 'index'),
+    path('', index, name = 'index'),
+    path('admin/', site_admin.urls),
     path('depot_rapport/', include('depot_rapport.urls')),
     path('depot_dossier/', include('depot_dossier.urls')),
-    path('', login),
     path('login/', login, name = 'login'),
+    path('login_page/', login_2, name = 'login_page'),
     path('inscription/', inscription, name = 'inscription'),
     path('accueil/', accueil, name = 'accueil'),
     path('profile/', profile, name = 'profile'),
+    path('profile/modifier_profile/', modifierProfile, name = 'modifProfile'),
     path('deconnexion/', deconnexion, name = 'deconnexion'),
     path('programmes/', programmes, name = 'programmes'),
-    path('modifierProfile/', modifierProfile, name = 'modifProfile'),
-    path('verification/', ajax_verification, name = 'verification'),
-    path('changer_departement/', ajax_changer_departement, name = 'changer_departement'),
-    path('changer_formation/', ajax_changer_formation, name = 'changer_formation'),
-]
+    path('programmes/programmes_pdf/<str:semestre>/', programmes_pdf, name = 'programmes_pdf'),
+    path('ajax/verification/', ajax_verification, name = 'verification'),
+    path('ajax/changer_departement/', ajax_changer_departement, name = 'changer_departement'),
+    path('ajax/changer_formation/', ajax_changer_formation, name = 'changer_formation'),
+    #path('pdf/', PDFTemplateView.as_view(template_name='programmes_pdf.html', filename = 'prog.pdf'), name='pdf'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

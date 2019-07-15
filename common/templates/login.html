@@ -9,8 +9,8 @@
 
 {% block contenu %}
 	<h1>Entrez vos informations</h1>
-	{% if activation %}
-		<ul class="errorlist"> <li> {{activation}} </li> </ul>
+	{% if info %}
+		<ul class="errorlist"> <li> {{info}} </li> </ul>
 	{% endif %}
 	{% crispy form %}
 {% endblock %}

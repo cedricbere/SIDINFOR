@@ -25,3 +25,13 @@ table
 {
 	width: 100%;
 }
+
+.color_champs
+{
+	color: red;
+}
+
+/*
+input, select option {
+	text-align: center;
+}*/

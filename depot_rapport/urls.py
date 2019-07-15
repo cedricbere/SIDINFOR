@@ -1,4 +1,7 @@
-# -*- conding:utf8 -*-
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
+
+
 '''
 Created on 22 mai 2018
 
@@ -6,7 +9,7 @@ Created on 22 mai 2018
 '''
 
 from django.urls import path
-from depot_rapport.views import mes_rapports, tous_rapports, ajax_recherche, resultats, rens_rapport, upload_fihier
+from depot_rapport.views import mes_rapports, tous_rapports, ajax_recherche, resultats, rens_rapport, upload_fihier, telecharger_rapport
 from common.views import accueil
 
 app_name = 'depot_rapport'
@@ -18,4 +21,7 @@ urlpatterns = [
     path('recherche/', ajax_recherche, name = 'recherche'),
     path('resultats_rech/', resultats, name = 'resultats_rech'),
     path('upload_fichier/', upload_fihier, name = 'upload_fichier'),
+    path('tous_rapports/telecharger_rapport/', telecharger_rapport, name = 'telecharger_rapport'),
+    path('tous_rapports/telecharger_rapport/<int:id_rapport>', telecharger_rapport, name = 'telecharger_rapport'),
+    
 ]

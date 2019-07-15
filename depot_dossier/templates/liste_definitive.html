@@ -1,0 +1,25 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title></title>
+	<!-- <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css' %}"/ -->
+	</head>
+	<body style="font-family: 'Times New Roman'">
+		<div class="row mt-5">
+			<div class="col-12">
+				<div class="row"> <div class="col-12" style="text-align: center;"> <h4> LISTE DEFINITIVES POUR LE COMPTE DU RECRUTEMENT {{niveau|upper}} </h1> </div> </div>
+				<table border="1" width="100%">
+					<tr> <th>Numéro dossier</th> <th>Nom(s)</th> <th>Prénom(s)</th> <th>Date de Naissance</th> <th>Lieu de naissance</th> <th>Etablissement</th> </tr>
+					{% for postulant in liste_def %}
+					<tr> <td> {{postulant.dossier.numero_dossier}} </td> <td> {{postulant.nom}} </td> <td> {{postulant.prenom}} </td> <td> {{postulant.date_naissance|date:"d/m/o"}} </td> <td> {{postulant.lieu_naissance}} </td> <td> {{postulant.etablissement_origine}} </td> </tr>
+					{% empty %}
+					<tr> <td colspan="6"> Personne n'a été selectionnée </td> </tr>
+					{% endfor %}
+				</table>
+				Liste arrêté à un total de {{liste_def|length}} nom{{liste_def|length|pluralize}}	
+			</div>
+		</div>
+	</body>
+</html>

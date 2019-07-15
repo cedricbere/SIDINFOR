@@ -1,0 +1,147 @@
+{% extends "base1.html" %}
+{% load staticfiles %}
+{% block CSSBase %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/base2.css' %}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/docs.min.css' %}"/>
+{% endblock %}
+{% block autreCSS %}{% endblock %}
+{% block title %}{% endblock %}
+{% block bodyId %}{% endblock %}
+
+{% block headerContenu %}
+<header>
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <div class="navbar-brand">SIDINFOR</div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav mr-auto">
+    	    <li class="nav-item" title="accueil">
+    	    	{% if user.compte.is_authenticated %}
+    	    	<a class="nav-link " href="{% url 'accueil' %}"> <img alt="accueil" class="btn btn-sm btn-info" src="{% static 'img/home.svg' %}"> <!-- Accueil --> </a>
+    	    {% else %}
+    	    <a class="nav-link " href="{% url 'index' %}"> <img alt="accueil" class="btn btn-sm btn-info" src="{% static 'img/home.svg' %}"> <!-- Accueil --> </a>
+    	    {% endif %} </li>
+        </ul>
+        
+        <div class="mt-2 mt-md-0">
+          <ul class="navbar-nav mr-auto">
+          	{% if user.compte.is_authenticated %}
+            <li class="nav-item" title="{{user.prenom|capfirst}} {{user.nom|capfirst}}">
+              <a class="nav-link mr-1" href="{% url 'profile' %}"> <img alt="profile" class="btn btn-sm btn-info" src="{% static 'img/profile.svg' %}"> <!-- {% block info_user %} {{user.etudiant.prenom|capfirst}} {{user.etudiant.nom|capfirst}} {% endblock %} --> </a>
+             </li>
+            <li class="nav-item" title="votre compte">
+              <a class="nav-link mr-1" href="#"> <img alt="compte" class="btn btn-sm btn-info" src="{% static 'img/settings.svg' %}"> <!-- Compte -->  </a>
+            </li>
+            <li class="nav-item" title="se déconnecter">
+              <a class="nav-link active" href="{% url 'deconnexion' %}"> <img alt="déconnexion" class="btn btn-sm btn-danger" src="{% static 'img/logout.svg' %}"> <!--Déconnexion --> </a>
+            </li>
+        	{% else %}
+          	<li class="nav-item" title="s'inscrire">
+              <a class="nav-link mr-3" href="{% url 'inscription' %}"> <img alt="inscription" class="btn btn-sm btn-info" src="{% static 'img/document.svg' %}"> <!-- Inscription -->  </a>
+            </li>
+            <li class="nav-item" title="se connecter">
+              <a class="nav-link active" id="blogin" href="#"> <img alt="connexion" class="btn btn-sm btn-info" src="{% static 'img/login.svg' %}"> <!-- Connexion --> </a>
+            </li>
+            {% endif %}
+           </ul>
+        </div>
+    </div>
+  </nav>
+</header>
+{% endblock %}
+
+
+{% block contenu %}
+
+<div class="container-fluid mt-1">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 bd-sidebar" style="border-top-right-radius: 0.75em;">
+      <button class="btn btn-link d-md-none p-0 ml-3" type="button" data-toggle="collapse" data-target="#bd-docs-nav" aria-controls="bd-docs-nav" aria-expanded="false" aria-label="Toggle docs navigation"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 30 30" width="30" height="30" focusable="false"><title>Liens rapides</title><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" d="M4 7h22M4 15h22M4 23h22"/></svg>
+      </button>
+      <nav class="collapse bd-links" id="bd-docs-nav">
+        <div class="navbar-text">Accés rapide</div>
+        {% if user.type_personne == 'Etudiant' %}
+        <div class="bd-toc-item" id="drapport">
+          <a class="bd-toc-link" href="#" id="lienRapport"> Rapport </a>
+          <ul class="nav bd-sidenav navbar">
+            <li class="" id="lien1"> <a href="{% url 'depot_rapport:tous_rapports' %}"> Consulter un {% if user.classe.nom_classe == "Licence 3" %} rapport {% elif user.classe.nom_classe == "Master 2" %} mémoire {% endif %} </a>  </li>
+            <li class=""> <a href="{% url 'depot_rapport:mes_rapports' %}"> Consulter mes {% if user.classe.nom_classe == "Licence 3" %} rapports {% elif user.classe.nom_classe == "Master 2" %} mémoires {% endif %} </a>  </li>
+           <li class=""> <a href="{% url 'depot_rapport:depotrapport' %}"> Ajout un nouveau stage</a> </li> 
+          </ul>      
+        </div>
+        {% endif %}
+
+        <div class="bd-toc-item" id="telecharger">
+          <a class="bd-toc-link" href="#" id="lienTelecharger">Télécharger</a>
+          <ul class="nav bd-sidenav navbar">
+            <li class="" id="lien2"> <a href="{% url 'programmes' %}"> Programme </a> </li>
+          </ul>   
+        </div>
+
+      {% if user.niveau.nom_classe == "Licence 3" %}
+        <div class="bd-toc-item" id="inscription">
+          <a class="bd-toc-link" href="#" id="lienInscription">Inscription</a>
+          <ul class="nav bd-sidenav navbar">
+            <li class="" id="lien3"> <a href="#"> Master </a> </li>
+            <li class=""> <a href="#"> Doctorat </a> </li>
+          </ul>   
+        </div>
+      {% endif %}
+      {% if user.compte.is_authenticated %}
+      <div class="bd-toc-item" id="dossier">
+        <a class="bd-toc-link" href="#" id="lienDossier">Dossier</a>
+        <ul class="nav bd-sidenav navbar" >
+          <li class="" id="lien4"> <a href="{% if user.type_personne == 'Postulant' %} {% url 'depot_dossier:renseignements' %} {%endif%}"> Mon dossier </a> </li>
+        </ul>   
+      </div>
+      {% endif %}
+      <div class="bd-toc-item" id="contacts">
+        <a class="bd-toc-link" href="#" id="lienContacts">Contacts</a>
+        <ul class="nav bd-sidenav navbar">
+          <li class="" id="lien5"> <a href="#"> Contact 1 </a> </li>
+          <li class=""> <a href="#"> Contact 2 </a> </li>
+        </ul>   
+      </div>
+
+      </nav> 
+    </div>
+
+    <main class="col-12 col-md-9 col-xl-10 bd-content" role="main">
+      	<div id="ban"> {% block carousel %} {% include 'carousel.html' %}  {% endblock %}	</div>
+    	<div id="centre">
+      	{% block breadcrumb %}{% endblock %}
+        {% block infoDossier %}{% endblock %}
+        {% block centre %} {% block info %}{% endblock %} {% endblock %}  
+    	</div>
+    </main>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<!--
+<footer class="footer">
+    <div class="container">
+    	<span class="text-muted">Prosition de pied de page</span>
+    </div>
+</footer>
+-->
+{% endblock %}
+
+
+{% block script %}
+<script type="text/javascript">
+	$(document).ready(function() {
+		// body...
+		$('#blogin').on({
+			click: function(){
+				$('#id01').css('display', 'block');
+			}
+		});
+	})
+</script>
+  <script type="text/javascript" src="{% static 'bootstrap/js/docs.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/base2.js' %}"></script>
+{% endblock %}

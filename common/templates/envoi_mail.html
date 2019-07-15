@@ -1,103 +1,11 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html>
 <head>
 	<title></title>
+	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css' %}"/>
 	<style type="text/css">
-
-		header{
-			position: relative;
-			top: 0;
-			width: 100%;
-			font-family: Georgia, Arial, Tahoma;
-		}
-
-		header h1{
-			margin: 0;
-			padding: 0;
-			color: white;
-			font-size: 2em;
-		}
-		
-		.navbar {
-  			position: relative;
-  			display: -ms-flexbox;
-  			display: flex;
-  			-ms-flex-wrap: wrap;
-  			flex-wrap: wrap;
-  			-ms-flex-align: center;
-  			align-items: center;
-  			-ms-flex-pack: justify;
-  			justify-content: space-between;
-  			padding: 0.5rem 1rem;
-		}
-
-
-		@media (min-width: 768px) {
-  			.navbar-expand-md {
-    			-ms-flex-flow: row nowrap;
-    			flex-flow: row nowrap;
-    			-ms-flex-pack: start;
-    			justify-content: flex-start;
-  			}
- 
-  			.navbar-expand-md .navbar-collapse {
-    			display: -ms-flexbox !important;
-    			display: flex !important;
-    			-ms-flex-preferred-size: auto;
-    			flex-basis: auto;
-  			}
-		}
-
-		.navbar-dark .navbar-brand {
-  			color: #fff;
-		}
-
-		.navbar-dark .navbar-brand:hover, .navbar-dark .navbar-brand:focus {
-  			color: #fff;
-		}
-
-
-		.fixed-top {
-  			position: fixed;
-  			top: 0;
-  			right: 0;
-  			left: 0;
-		 	z-index: 1030;
-		}
-		
-		.collapse:not(.show) {
-  			display: none;
-		}
-
-		.navbar-collapse {
-  			-ms-flex-preferred-size: 100%;
-  			flex-basis: 100%;
-  			-ms-flex-positive: 1;
-  			flex-grow: 1;
-  			-ms-flex-align: center;
-  			align-items: center;
-		}
-
-		.navbar-brand {
-  			display: inline-block;
-  			padding-top: 0.3125rem;
-  			padding-bottom: 0.3125rem;
-  			margin-right: 1rem;
-  			font-size: 1.25rem;
-  			line-height: inherit;
-  			white-space: nowrap;
-  			font-family: Georgian;
-		}
-
-		.navbar-brand:hover, .navbar-brand:focus {
-  			text-decoration: none;
-		}
-
-		.bg-dark {
-  		background-color: #343a40 !important;
-		}
-
-		img#logo{
+		/*img#logo{
 			width: 50%;
 			position: relative;
 			float: left;
@@ -105,19 +13,72 @@
 			margin: -10px;
 			padding: -10px;
 			background-color: white;
-		}
+		}*/
 	</style>
 	</head>
 	<body>
 		<header>
     		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        		<a href="http://localhost:8000/login"> <img src="../static/img/logo1.png" alt="logo_uo" title="Logo de UO1 Pr JKZ" id="logo" class="navbar-brand" /> </a>
+        		<!-- <a href="http://localhost:8000/login"> <img src="../static/img/logo1.png" alt="logo_uo" title="Logo de UO1 Pr JKZ" id="logo" class="navbar-brand" /> </a> -->
         		<div class="collapse navbar-collapse">
-            		<h1 id="titre">SIDINFOR :: Système Intégré du Département d'Informatique</h1>
+            		<h1>SIDINFOR :: Système Intégré du Département d'Informatique</h1>
         		</div>
     		</nav>
 		</header>
+		<h3>Inscription SIDINFOR</h3>
+		{% if type_mail == 'inscription' %}
+			{% if regime == 'étudiant' %}
+			<div>
+				<p>
+				Vous recevez ce mail suite à votre inscription sur la plateforme SIDINFOR en tant qu'étudiant.
+        		Vontre identité sera vérifié avant l'activation de votre compte.
+        		Merci de Patienter. Cordialement.
+			</p></div>
+			{% elif regime == 'postulant' %}
+			<div>
+				<p>
+					Vous recevez ce mail suite à votre inscription sur la plateforme SIDINFOR en tant que postulant.
+        			Cliquez sur <a href="http://localhost:8000/sidinfor/depot_dossier/activation_compte/{{user_name}}/{{code}}" class="btn btn-info btn-sm">ici</a> pour activater automatiquement votre compte. Cordialement.
+				</p>
+			</div>
+			{% else %}
+			<div>
+				<p>
+					<dl class="container">
+						<dt>Prénom et Nom:</dt> <dd> {{identite}} </dd>
+						<dt>email: </dt> <dd> {{email}} </dd>
+						<dt>Date d'inscription: </dt> <dd> {{date_inscription}} </dd>
+						<dt>Régime: </dt> <dd> {{type}} </dd>
+						<dt>Statut du mail envoyé: </dt> <dd> {{statut}} </dd>
+					</dl>
+				</p>
+			</div>		
+			{% endif %}
+		{% elif type_mail == 'confirmation' %}
 
+			{% if regime == 'étudiant' %}
+			<div><p>
+				Vous recevez ce mail suite à la confirmation de votre inscription sur la plateforme sidinfor.
+        		Cordialement.
+			</p></div>
+			{% elif regime == 'postulant' %}
+			<div><p>
+				Vous recevez ce mail suite à la confirmation de votre inscription sur la plateforme sidinfor.
+        		Cordialement.
+			</p></div>
+			{% else %}
+			<div><p>
+				Confirmation d'action du compte de:
+				<dl class="container">
+					<dt>Prénom et Nom:</dt> <dd> {{identite}} </dd>
+					<dt>email: </dt> <dd> {{email}} </dd>
+					<dt>Date d'inscription: </dt> <dd> {{date_inscription}} </dd>
+					<dt>Régime: </dt> <dd> {{type}} </dd>
+					<dt>Statut du mail envoyé: </dt> <dd> {{statut}} </dd>
+				</dl>	
+			</p></div>		
+			{% endif %}
+		{% endif %}
 	</body>
 </html>
 

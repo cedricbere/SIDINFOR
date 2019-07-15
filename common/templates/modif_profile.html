@@ -1,12 +1,11 @@
-{% extends "base2test.html" %}
+{% extends "base2.html" %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 {% load crispy_forms_field %}
 {% load countries %}
 
 {% block autreCSS %}
-	<link rel="stylesheet" type="text/css" href="{% static 'css/form.css' %}"/>
-	{{form.media}}
+	{{form.media.css}}
 {% endblock %}
 {% block title %}Modifier son profile{% endblock %}
 {% block bodyId %}modif{% endblock %}
@@ -30,14 +29,18 @@
 <center class="center"> <h1>Modifier votre profile</h1> </center>
 
 <center class="container">
-	<form method="post" action="" class="form-group row container">
+	<form method="post" action="" class="">
 		{% csrf_token %}
 		{% crispy form %}
 		<div class="btn btn-group">
 			<input type="submit" value="Modifier"/>
-			<a class ="btn btn-danger" href="{% url 'profile' %}"> Annuler </a>
+			<a class ="btn btn-danger" href="{% url 'profile' %}"> Retour </a>
 		</div>
 	</form>
 </center>
 {% endblock %}
+{% endblock %}
+
+{% block script %}
+{{form.media.js}}
 {% endblock %}

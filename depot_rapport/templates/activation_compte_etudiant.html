@@ -1,0 +1,56 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+{% load staticfiles %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &rsaquo;
+    Liste d'activation
+    </div>
+{% endblock %}
+
+{% block content %}
+
+{% if page_ok %}
+<div class="module">
+<table border="1" width="100%">
+	<caption>Liste des comptes étudiants non actif </caption>
+	<tr>
+		<th align="center" scope="row">Matricule</th>
+		<th align="center" scope="row">Nom</th>
+		<th align="center" scope="row">Prénom</th>
+		<th align="center" scope="row">Date de naissance</th>
+		<th align="center" scope="row">Filière</th>
+		<th align="center" scope="row">Classe</th>
+		<th align="center" scope="row">Promotion</th>
+		<th align="center" scope="row">Activation</th>
+	</tr>
+	<form action="{% url 'admin:activation' %}" method="post">
+		{% csrf_token %}
+		{% for etudiant in liste_etudiants %}
+		<div scope="row">
+		<tr>
+			<td align="center">{{etudiant.matricule}}</td>
+			<td align="center">{{etudiant.nom}}</td>
+			<td align="center">{{etudiant.prenom}}</td>
+			<td align="center">{{etudiant.date_naissance|date:"d/m/Y"}}</td>
+			<td align="center">{{etudiant.filiere}}</td>
+			<td align="center">{{etudiant.classe}}</td>
+			<td align="center"> {{etudiant.promotion}} </td>
+			<td align="center"> <input type="checkbox" name="etud_{{etudiant.id}}" value="{{etudiant.id}}"> </td>
+		</tr>
+		</div>
+		{% empty %}
+		<tr>
+			<td colspan="9" align="center"> <h5> Aucun compte non activé </h5> </td>
+		</tr>
+		{% endfor %}
+		<input type="submit" value="Activer compte cocher">
+		
+	</form>
+</table>
+</div>
+{% else %}
+Page non trouvé
+{% endif %}
+{% endblock %}
