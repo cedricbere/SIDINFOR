@@ -10,7 +10,7 @@
         <title>sidinfor - {% block title %}{% endblock %}</title>
         <link rel="icon" type="image/ico" href="{% static 'img/favicon.ico' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css' %}"/>
-        <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.min.css' %}"/>
+        <!--<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.min.css' %}"/>-->
     	{% block CSSBase %}
         <link rel="stylesheet" type="text/css" href="{% static 'css/base1.css' %}"/>
     	{% endblock %}
@@ -25,18 +25,18 @@
                 	<h1 id="titre">SIDINFOR :: Système Intégré du Département d'Informatique</h1>
             	</div>
        		</nav>
-    	</header>
-    	{% endblock %}
+		</header>
+		{% endblock %}
 
-    	<div id="contenu">
+    	<div id="contenu" class="row">
         {% block contenu %}{% endblock %}
-    	</div>
+		</div>
 
 		{% block footer %}{% endblock %}
 		{% block login %}{% endblock %}
 
 		<script type="text/javascript" src="{% static 'js/jquery-3.3.1.min.js' %}" crossorigin="anonymous"></script>
-    	<script type="text/javascript" src="{% static 'js/jquery-ui.min.js' %}"></script>
+    	<!-- <script type="text/javascript" src="{% static 'js/jquery-ui.min.js' %}"></script> -->
     	<script type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
     	<script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     	{% block script %}{% endblock %}

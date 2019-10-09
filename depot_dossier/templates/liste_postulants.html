@@ -2,10 +2,14 @@
 {% load i18n static %}
 {% load staticfiles %}
 
+{% block extrastyle %}
+<!-- <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css' %}"/> -->
+{% endblock %}
+
 {% block breadcrumbs %}
     <div class="breadcrumbs">
     <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &rsaquo;
-    <a href="{% url 'admin:gestion' %}"> Gestion & Suivi </a> &rsaquo;
+    <a href="{% url 'admin:gestion' %}"> GAdministration </a> &rsaquo;
     {% if liste_postulant %}
     Liste des candidats {{niveau}}
     {% endif %}
@@ -16,31 +20,52 @@
 
 {% if liste_postulant %}
 <div class="module">
-<table border="1" width="100%">
-	<caption>Liste postulant {{niveau}} </caption>
-	<tr>
-		<th align="center" scope="row">ID</th> <th align="center" scope="row">Nom</th> <th align="center" scope="row">Prénom</th> <th align="center" scope="row">Date de naissance</th> <th align="center" scope="row">Lieu de naissance</th> <th align="center" scope="row">N. dossier</th> <th align="center" scope="row">Date de dépot</th> <th>Informations</th> <th>Selection</th>
-	</tr>
-	<form action="{% url 'admin:liste_definitive' niveau %}" method="post">
-		{% csrf_token %}
-		{% for postulant in liste_postulant %}
+	<button class="button"> <a href="{% url 'admin:fichier_excel' niveau %}"> Fichier Excel </a> </button>
+	<button class="button"> <a href="{% url 'admin:reinitialiser' niveau %}"> Réinitialiser </a> </button>
+	<button class="button"> <a href="{% url 'admin:liste_definitive' niveau %}"> PDF </a> </button>
+	<button class="button"> <a href="{% url 'admin:liste_definitive_web' niveau %}"> Web </a> </button>
+	<table border="1" width="100%" style="margin-top: 3em;">
+		<caption>Liste postulant {{niveau}} </caption>
 		<tr>
-			<td align="center"> {{postulant.id}} </td> <td align="center">{{postulant.nom}}</td> <td align="center">{{postulant.prenom}}</td> <td align="center">{{postulant.date_naissance}}</td> <td align="center">{{postulant.lieu_naissance}}</td> <td align="center">{{postulant.dossier.numero_dossier}}</td> <td align="center">{{postulant.dossier.date_inscription}}</td>
-			<td align="center"> <a href="{% url 'admin:fiche_personnelle' niveau postulant.id %}"> plus d'info... </a> </td>
-			<td align="center"> <input type="checkbox" name="post_{{postulant.id}}" value="{{postulant.id}}"> </td>
+			<th align="center" scope="row">Nº dossier</th>
+			<th align="center" scope="row">Nom</th>
+			<th align="center" scope="row">Prénom</th>
+			<th align="center" scope="row">Sexe</th>
+			<th align="center" scope="row">Date de naissance</th>
+			<th align="center" scope="row">Établissement</th>
+			<th align="center" scope="row">Diplôme</th>
+			<th align="center" scope="row">État du dossier</th>
+			<th align="center" scope="row">Profile</th>
 		</tr>
+		{% for postulant in liste_postulant %}
+		<tr style="background-color: {% if postulant.dossier.validation == 'validé' %}
+									lightgreen
+								{% elif postulant.dossier.validation == 'rejeté'%}
+									red
+								{% elif postulant.dossier.validation == 'attente'%}
+									lightblue
+								{% endif %};">
+			<td align="center">{{postulant.dossier.numero_dossier}}</td>
+			<td align="center">{{postulant.nom}}</td>
+			<td align="center">{{postulant.prenom}}</td>
+			<td align="center">{{postulant.sexe}}</td>
+			<td align="center">{{postulant.date_naissance|date:"SHORT_DATE_FORMAT"}}</td>
+			<td align="center">{{postulant.etablissement_origine}}</td>
+			<td align="center">
+			{% for univ in parcours_univ %}
+				{% if postulant == univ.etudiant %}
+					{{univ.intitule_diplome}}
+				{% endif %}
+			{% endfor %}
+			</td>
+			<td align="center">{{postulant.dossier.etat_traitement}}</td>
+			<td align="center"> <a href="{% url 'admin:fiche_personnelle' niveau postulant.id %}"> plus d'info... </a> </td>
 		{% empty %}
 		<tr>
 			<td colspan="9" align="center"> <h5> Aucun élément trouvé </h5> </td>
 		</tr>
 		{% endfor %}
-		<input type="submit" value="Produire la liste définitive">
-		
-	</form>
-</table>
-
-<button class="button"> <a href="{% url 'admin:fichier_excel' niveau %}"> Fichier Excel </a> </button>
-<button class="button"> <a href="{% url 'admin:reinitialiser' niveau %}"> Réinitialiser </a> </button>
+	</table>
 </div>
 {% else %}
 Aucune donnée

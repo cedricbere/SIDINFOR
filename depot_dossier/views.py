@@ -51,7 +51,7 @@ def depot_doss(request):
     logged_user = user_form(request)
     if logged_user:
         if logged_user.type_personne != 'Postulant':
-            return redirect('/sidinfor/accueil')
+            return redirect('/accueil')
         postulant = FormRensPostulant(data = request.POST if request.POST and(request.POST['type_form'] == 'postulant') else None,
                                       instance = logged_user, prefix='post')
         formation = None
@@ -134,21 +134,21 @@ def depot_doss(request):
                 ancre = '#idContenu'
                 if postulant.has_changed() and postulant.is_valid():
                     postulant.save()
-                    return redirect('/sidinfor/depot_dossier/renseignements/'+ancre+sous_ancre)
+                    return redirect('/depot_dossier/renseignements/'+ancre+sous_ancre)
             elif request.POST['type_form'] == 'formation':
                 ancre = '#formationContenu'
                 if formation.has_changed() and formation.is_valid():
                     formation.save()
                     logged_user.formation = formation.instance
                     logged_user.save()
-                    return redirect('/sidinfor/depot_dossier/renseignements/'+ancre+sous_ancre)
+                    return redirect('/depot_dossier/renseignements/'+ancre+sous_ancre)
             elif request.POST['type_form'] == 'documentId':
                 ancre = '#docContenu'
                 if documentId.has_changed() and documentId.is_valid():
                     documentId.save()
                     logged_user.documentId = documentId.instance
                     logged_user.save()
-                    return redirect('/sidinfor/depot_dossier/renseignements/'+ancre+sous_ancre)
+                    return redirect('/depot_dossier/renseignements/'+ancre+sous_ancre)
             elif request.POST['type_form'] == 'universitaire':
                 ancre = '#curriculumContenu'
                 sous_ancre ='/#univContenu'
@@ -156,7 +156,7 @@ def depot_doss(request):
                     for form in parcoursUniversitaire:
                         form.instance.etudiant = logged_user
                     parcoursUniversitaire.save()
-                    return redirect('/sidinfor/depot_dossier/renseignements/'+ancre+sous_ancre)
+                    return redirect('/depot_dossier/renseignements/'+ancre+sous_ancre)
             elif request.POST['type_form'] == 'stage':
                 ancre = '#curriculumContenu'
                 sous_ancre = '/#stageContenu'
@@ -164,7 +164,7 @@ def depot_doss(request):
                     for form in parcoursStage:
                         form.instance.stagiaire = logged_user
                     parcoursStage.save()
-                    return redirect('/sidinfor/depot_dossier/renseignements/'+ancre+sous_ancre)
+                    return redirect('/depot_dossier/renseignements/'+ancre+sous_ancre)
             elif request.POST['type_form'] == 'professionnel':
                 ancre = '#curriculumContenu'
                 sous_ancre = '/#proContenu'
@@ -172,7 +172,7 @@ def depot_doss(request):
                     for form in parcoursProfessionnel:
                         form.instance.employe = logged_user
                     parcoursProfessionnel.save()
-                    return redirect('/sidinfor/depot_dossier/renseignements/'+ancre+sous_ancre)
+                    return redirect('/depot_dossier/renseignements/'+ancre+sous_ancre)
             elif request.POST['type_form'] == 'autre':
                 ancre = '#curriculumContenu'
                 sous_ancre = '/#autreContenu'
@@ -180,7 +180,7 @@ def depot_doss(request):
                     for form in parcoursAutre:
                         form.instance.employe = logged_user
                     parcoursAutre.save()
-                    return redirect('/sidinfor/depot_dossier/renseignements/'+ancre+sous_ancre)
+                    return redirect('/depot_dossier/renseignements/'+ancre+sous_ancre)
             elif request.POST['type_form'] == 'pieces_jointes':
                 ancre = '#piecesContenu'
                 pass
@@ -213,14 +213,14 @@ def annuler_reprendre_dos(request):
     logged_user = user_form(request)
     if logged_user:
         if logged_user.type_personne != 'Postulant':
-            return redirect('/sidinfor/accueil')
+            return redirect('/accueil')
         if logged_user.dossier.etat_traitement == 'annulé':
-            logged_user.dossier.etat_traitement = 'attente'
+            logged_user.dossier.etat_traitement = 'incomplet'
             logged_user.dossier.save()
         else:
             logged_user.dossier.etat_traitement = 'annulé'
             logged_user.dossier.save()
-        return redirect('/sidinfor/depot_dossier/renseignements')
+        return redirect('/depot_dossier/renseignements')
     return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
 
 

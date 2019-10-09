@@ -154,7 +154,7 @@ def inscription(request):
             # création du dossier du postulant
             numero = postulant.instance.id
             numero = str(formater(numero, 5))+str(request.POST['niveau'][0]).upper()
-            dossier = Dossier.objects.create(numero_dossier = numero, etat_traitement = 'attente')
+            dossier = Dossier.objects.create(numero_dossier = numero, etat_traitement = 'incomplet')
             postulant.instance.dossier = dossier
             postulant.save()
             
@@ -175,7 +175,7 @@ def inscription(request):
                                                             'autre_info': autre_info})
         
         activation =  """Veuillez consulter vos mail, nous vous avons envoyé un mail."""
-        return render(request, 'login.html', {'activation': activation, 'form': LoginForm()})    
+        return render(request, 'confirmation.html', {'activation': activation})    
     return render(request, 'inscription.html', {'etudiant': etudiant, 'compteEtudiant': compteEtudiant,
                                     'comptePostulant': comptePostulant, 'postulant': postulant, 'formation': formation,
                                     'autre_info': autre_info})
@@ -217,7 +217,7 @@ def deconnexion(request):
     logged_user = user_form(request)
     if logged_user:
         logout(request)
-    return redirect('/sidinfor')
+    return redirect('/')
 
 
 
@@ -277,7 +277,7 @@ def ajax_verification(request):
                     for user in users:
                         if user.email == test:
                             trouve = True
-                            break;
+                            break
                     if trouve:
                         message, statut = "Cette adresse électronique est déjà prise.", 'warning'
             elif request.GET['type'] == 'pseudo':

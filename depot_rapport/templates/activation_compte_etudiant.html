@@ -4,7 +4,8 @@
 
 {% block breadcrumbs %}
     <div class="breadcrumbs">
-    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &rsaquo;
+	<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &rsaquo;
+	<a href="{% url 'admin:gestion' %}">{% trans 'Administration' %}</a> &rsaquo;
     Liste d'activation
     </div>
 {% endblock %}
@@ -14,7 +15,7 @@
 {% if page_ok %}
 <div class="module">
 <table border="1" width="100%">
-	<caption>Liste des comptes étudiants non actif </caption>
+	<caption>Liste des comptes étudiants non actifs </caption>
 	<tr>
 		<th align="center" scope="row">Matricule</th>
 		<th align="center" scope="row">Nom</th>
@@ -25,7 +26,7 @@
 		<th align="center" scope="row">Promotion</th>
 		<th align="center" scope="row">Activation</th>
 	</tr>
-	<form action="{% url 'admin:activation' %}" method="post">
+	<form action="{% url 'admin:activation_comptes' %}" method="post">
 		{% csrf_token %}
 		{% for etudiant in liste_etudiants %}
 		<div scope="row">
@@ -45,7 +46,7 @@
 			<td colspan="9" align="center"> <h5> Aucun compte non activé </h5> </td>
 		</tr>
 		{% endfor %}
-		<input type="submit" value="Activer compte cocher">
+		<input type="submit" value="Activer les comptes cochés">
 		
 	</form>
 </table>

@@ -12,8 +12,9 @@ from django import forms
 
 from common.models import UFR, Departement
 
-from depot_dossier.models import Postulant, DocumentId, Stage, Professionnel, Master, Doctorat, Autre, Universitaire, \
-    Fichiers, AttestationTravail, AttestationAutre, AttestationStage
+from depot_dossier.models import Postulant, DocumentId, Stage, Professionnel, Master,\
+    Doctorat, Autre, Universitaire, Fichiers,\
+    AttestationTravail, AttestationAutre, AttestationStage, Dossier
 from depot_dossier.get_user import get_user
 
 from bootstrap_datepicker_plus import DatePickerInput#, YearPickerInput
@@ -43,7 +44,8 @@ class FormRensPostulant(forms.ModelForm):
                 Div(Div('date_naissance', css_class='col-6'), Div('lieu_naissance', css_class='col-6'), css_class='row'),
                 Div(Div('sexe', css_class='col-6'), Div('ville', css_class='col-6'), css_class='row'),
                 Div(Div('region', css_class='col-6'), Div('pays', css_class='col-6'), css_class='row'),
-                Div(Div('etablissement_origine', css_class='col-6'), Div('num_tel', css_class='col-6'), css_class='row'),
+                Div(Div('etablissement_origine', css_class='col-6'), Div('statut_post', css_class='col-6'), css_class='row'),
+                Div(Div('num_tel', css_class='col-6'), css_class='row'),
                 css_class = 'form-group'),
             Div(
                 Hidden('type_form', 'postulant'),
@@ -68,6 +70,8 @@ class FormRensPostulant(forms.ModelForm):
                 #'data-content':'Veuillez saisir votre nationalité.', 'class': 'form-control form-group',}),
             'ville': forms.TextInput(attrs={'placeholder': 'ville de résidence', 'data-toggle': 'popover',
                 'data-content':'Veuillez saisir le nom de la ville où vous vivez.', 'class': 'form-control form-group',}),
+            'statut_post': forms.TextInput(attrs={'placeholder': 'Statut', 'data-toggle': 'popover',
+                'data-content':'Votre statut professionel.', 'class': 'form-control  form-group',}),
             'lieu_naissance': forms.TextInput(attrs={'placeholder': 'lieu de naissance', 'data-toggle': 'popover',
                 'data-content':'Veuillez saisir votre lieu de naissance.', 'class': 'form-control form-group',}),
             'region': forms.TextInput(attrs={'placeholder': 'région (état) de résidence', 'data-toggle': 'popover',
@@ -642,3 +646,40 @@ class  FormAttestationAutreHelper(FormHelper):
                 Div('attestation_autre', css_class='col-3'),
                 Div('DELETE', css_class='col-1'), css_class='row'),
             )
+
+class FormValidation(forms.ModelForm):
+    """
+    """
+    class Meta:
+        model = Dossier
+        fields = ('commentaire_dos', 'observation_dos', 'validation')
+        widgets = {
+            'commentaire_dos': forms.Textarea(attrs={'placeholder': "Commentaire..."}),
+            'observation_dos': forms.Textarea(attrs={'placeholder': "Observation..."}),
+            }
+        
+    def clean(self):
+        cleaned_data = super(FormValidation, self).clean()
+        
+        if cleaned_data:
+            return cleaned_data
+        else:
+            raise forms.ValidationError("Veuillez vérifier les information saisies.")
+    
+    @property
+    def helper(self):
+        helper = FormHelper()
+        helper.include_media = False
+        helper.label_class = 'sr-only'
+        #helper.field_class = 'col-9'
+        helper.form_show_labels = False
+        helper.layout = Layout(
+            Div(
+                Div('commentaire_dos', css_class='col-4'),
+                Div('observation_dos', css_class='col-4'),
+                Div('validation', css_class='col-3'),
+                Div(
+                    Submit('submit', 'Sauvergarder'), 
+                    Hidden('valid', 'valid'), css_class='btn btn-group mt-5'), css_class = 'row')
+            )
+        return helper
