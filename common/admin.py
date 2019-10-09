@@ -15,11 +15,14 @@ from django.template.response import TemplateResponse, get_template
 from django.shortcuts import redirect
 from django.db import connection
 
-from common.models import UFR, Departement, Filiere, Matiere, UniteEnseignement,  Semestre,  Classe, Carousel
+from common.models import UFR, Departement, Filiere, Matiere,\
+    UniteEnseignement,  Semestre,  Classe, Carousel
 from common.outils import dictfetchall
 
-from depot_dossier.models import Postulant, Universitaire, Autre, Fichiers, Stage, Professionnel,\
-    AttestationStage, AttestationTravail, AttestationAutre
+from depot_dossier.models import Postulant, Universitaire, Autre,\
+    Fichiers, Stage, Professionnel, AttestationStage,\
+    AttestationTravail, AttestationAutre
+from depot_dossier.forms import FormValidation
 from depot_dossier.outils import production_excel
 
 from wkhtmltopdf.views import PDFTemplateResponse
@@ -40,7 +43,7 @@ class NewAdminSite(AdminSite):
         urls = super().get_urls()
         
         added_urls = [
-            path('activation/', self.admin_view(self.activation, cacheable = True), name = 'activation'),
+            path('activation_comptes/', self.admin_view(self.activation_comptes, cacheable = True), name = 'activation_comptes'),
             path('gestion/', self.admin_view(self.gestion, cacheable = True), name = 'gestion'),
             path('gestion/fiche_personnelle/', self.admin_view(self.fiche_perso, cacheable = True), name = 'fiche_personnelle'),
             path('gestion/<str:niveau>/', self.admin_view(self.gestion, cacheable = True), name = 'gestion'),
@@ -54,6 +57,7 @@ class NewAdminSite(AdminSite):
             path('fichier_excel/<str:niveau>/', self.admin_view(self.fichier_excel, cacheable = True), name = 'fichier_excel'),
             path('liste_definitive/', self.admin_view(self.liste_definitive, cacheable = True), name = 'liste_definitive'),
             path('liste_definitive/<str:niveau>/', self.admin_view(self.liste_definitive, cacheable = True), name = 'liste_definitive'),
+            path('liste_definitive_web/<str:niveau>/', self.admin_view(self.liste_definitive_web, cacheable = True), name = 'liste_definitive_web'), #debug
             path('reinitialiser/', self.admin_view(self.reinitialiser_dossiers, cacheable = True), name = 'reinitialiser'),
             path('reinitialiser/<str:niveau>/', self.admin_view(self.reinitialiser_dossiers, cacheable = True), name = 'reinitialiser'),
             ]
@@ -64,8 +68,10 @@ class NewAdminSite(AdminSite):
         request.current_app = self.name
         if niveau:
             
-            liste_postulant = Postulant.objects.filter(formation__niveau = niveau, compte__is_active = True)
-            context = dict(self.each_context(request), liste_postulant= liste_postulant, niveau = niveau, title = 'Gestionnaire')
+            liste_postulant = Postulant.objects.filter(formation__niveau = niveau, compte__is_active = True).order_by('-sexe', '-date_naissance')
+            niveau_etude = 'Licence 3' if niveau == 'master' else 'Master 2'
+            parcours_univ = Universitaire.objects.filter(niveau_etude = niveau_etude)
+            context = dict(self.each_context(request), liste_postulant= liste_postulant, niveau = niveau, title = 'Gestionnaire', parcours_univ = parcours_univ)
             return TemplateResponse(request, 'liste_postulants.html', context)
         else:
             context = dict(self.each_context(request), title = 'Gestionnaire')
@@ -84,6 +90,10 @@ class NewAdminSite(AdminSite):
                 context = dict(self.each_context(request), trouve = False, title = 'Fiche Personnelle')
                 return TemplateResponse(request, 'fiche_postulant.html', context)
             else:
+                form_dos = FormValidation(data = request.POST or None, instance = postulant.dossier)
+                if request.POST and 'validation' in request.POST:
+                    if form_dos.has_changed() and form_dos.is_valid():
+                        form_dos.save()
                 univ = Universitaire.objects.filter(etudiant__id = id_postulant).order_by('-annee_univ')
                 stage = Stage.objects.filter(stagiaire__id = id_postulant).order_by('-annee_stage')
                 autre = Autre.objects.filter(employe__id = id_postulant).order_by('-annee_autre')
@@ -93,10 +103,11 @@ class NewAdminSite(AdminSite):
                 attestation_stage = AttestationStage.objects.filter(stage__in = stage)
                 attestation_travail = AttestationTravail.objects.filter(emploi__in = travail)
                 attestation_autre = AttestationAutre.objects.filter(emploi_autre__in = autre)
-                context = dict(self.each_context(request), trouve = True, postulant = postulant, univs = univ, stages = stage, autres = autre,
-                                     travail = travail,  pieces_jointes = pieces_jointes,
-                                     attestation_stage = attestation_stage, attestation_travail = attestation_travail,
-                                     attestation_autre = attestation_autre, title = 'Fiche Personnelle')
+                context = dict(self.each_context(request), trouve = True, postulant = postulant,
+                    univs = univ, stages = stage, autres = autre, travail = travail,
+                    pieces_jointes = pieces_jointes, attestation_stage = attestation_stage,
+                    attestation_travail = attestation_travail, attestation_autre = attestation_autre,
+                    title = 'Fiche Personnelle', form_dos = form_dos)
                 return TemplateResponse(request, 'fiche_postulant.html',  context)
 
    
@@ -128,28 +139,25 @@ class NewAdminSite(AdminSite):
         """       
         production_excel(request = request, niveau = niveau)
     
-        return redirect('/sidinfor/admin/gestion/%s' % niveau)
+        return redirect('/admin/gestion/%s' % niveau)
     
     def liste_definitive(self, request, niveau = ''):
         request.current_app = self.name
-        liste_def = []
-        for p in request.POST.keys():
-            if 'post_' in p:
-                try: liste_def.append(Postulant.objects.get(pk = request.POST[p]))
-                except: pass
-            for postulant in liste_def:
-                postulant.dossier.etat_traitement = 'validé'
-                postulant.dossier.save()
-            for postulant in Postulant.objects.all():
-                if postulant not in liste_def:
-                    postulant.dossier.etat_traitement = 'rejeté'
-                    postulant.dossier.save() 
+        liste_def = Postulant.objects.all()
+        
         context = dict(liste_def = liste_def, niveau = niveau)
         return PDFTemplateResponse(
             request = request, template = 'liste_definitive.html', context = context,
             filename = 'liste_definitive.pdf', show_content_in_browser = False)
+        
+    def liste_definitive_web(self, request, niveau = ''):
+        request.current_app = self.name
+        liste_def = Postulant.objects.all()
+        
+        context = dict(liste_def = liste_def, niveau = niveau)
+        return TemplateResponse(request, 'liste_definitive.html', context = context)
     
-    def activation(self, request):
+    def activation_comptes(self, request):
         request.current_app = self.name
         liste_compte = []
         if request.POST:
@@ -159,10 +167,9 @@ class NewAdminSite(AdminSite):
                         etudiant =  Etudiant.objects.get(pk = request.POST[p])
                         liste_compte.append(User.objects.get(etudiant = etudiant))
                     except: pass
-                for compte in liste_compte:
-                    compte.is_active = True
-                    compte.save()
-        print(liste_compte)
+            for compte in liste_compte:
+                compte.is_active = True
+                compte.save()
         liste_etudiants = Etudiant.objects.filter(compte__is_active = False)
         context = dict(self.each_context(request), title = 'Gestionnaire', liste_etudiants = liste_etudiants, page_ok = True)
         return TemplateResponse(request, 'activation_compte_etudiant.html', context)
@@ -170,9 +177,9 @@ class NewAdminSite(AdminSite):
     def reinitialiser_dossiers(self, request, niveau = ''):
         request.current_app = self.name
         for p in Postulant.objects.filter(formation__niveau = niveau):
-            p.dossier.etat_traitement = 'attente'
+            p.dossier.validation = None
             p.dossier.save()
-        return redirect('/sidinfor/admin/gestion/%s' % niveau)
+        return redirect('/admin/gestion/%s' % niveau)
 
     
 site_admin = NewAdminSite('admin')

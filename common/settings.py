@@ -22,31 +22,41 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '!8c&60a-8l#5j^_1*ca%pz=c7aip)12k3ad@*-)6jfwknwa+kl'
+SECRET_KEY = 'u4p-(6r3v$-)m@)ajph(+f&*n=aq7w7h$7^u$@$h4g=(b6@v_n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+if os.environ.get('ENV') == 'PRODUCTION':
+    DEBUG = False
+    ALLOWED_HOSTS = ['https://sidinfor.herokuapp.com', ]
+else:
+    DEBUG = True
+    ALLOWED_HOSTS = ['localhost',]
 
 LOGIN_URL = "/login_page"
 
 # Admin
 ADMINS = [('Mohamed Zeba', 'parice02@hotmail.com'),]
+SERVER_EMAIL = 'parice02@hotmail.com'
+DEFAULT_FROM_EMAIL = 'parice02@hotmail.com'
 
-ALLOWED_HOSTS = ['sidinfor.herokuapp.com']
 
 # Gestion e-mail
 #remplacer 'dummy' par 'smtp' en production pour rées une connexion smtp, ou par 'console' pour passer par console.
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+if os.environ.get('ENV') == 'PRODUCTION':
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 EMAIL_SUBJECT_PREFIX = '[SIDINFOR]'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER =''
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST = 'smtp-pulse.com'
+EMAIL_HOST_USER ='parice02@hotmail.com'
+EMAIL_HOST_PASSWORD = 'do7ibJZJRP'
 EMAIL_USE_SSL = True
-EMAIL_USE_TLS = True
+#EMAIL_USE_TLS = True
+EMAIL_PORT = 465
 
-
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+if os.environ.get('ENV') == 'PRODUCTION':
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
 
 # Application definition
 INSTALLED_APPS = [
@@ -78,6 +88,8 @@ MIDDLEWARE = [
     'depot_dossier.get_user.RequestMiddleware'
 ]
 
+if os.environ.get('ENV') == 'PRODUCTION':
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ROOT_URLCONF = 'common.urls'
 

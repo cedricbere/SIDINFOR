@@ -12,7 +12,7 @@ Created on 9 oct. 2018
 
 from secrets import choice
 from string import ascii_letters, digits
-from django.core.mail import EmailMultiAlternatives, mail_admins
+from django.core.mail import EmailMultiAlternatives, mail_admins, send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
@@ -28,13 +28,13 @@ def dictfetchall(cursor):
 
 
 def envoyer_mail_admins(type_mail = '', inscrit = '', mail_envoye = ''):
-    if not inscrit.type_personne:
-        raise ValueError("%s n'est pas de type Personne" % (None))
+    """
+    """
     
     sujet = 'Nouvelle inscription'
     contenu_html = render_to_string(template_name = 'envoi_mail.html', context = {'type_mail': type_mail, 'regime': 'admin', 'identite': inscrit.prenom+' '+inscrit.nom,
             'email': inscrit.compte.email, 'date_inscription': inscrit.compte.date_joined.strftime('%A, %d %B %Y %H:%M:%S'),
-            'type': inscrit.type_personne, 'statut': mail_envoye})
+            'type': inscrit.type_personne, 'statut': 'Envoyé' if mail_envoye else 'Non envoyé'})
 
     contenu_texte = strip_tags(contenu_html)
     
@@ -52,8 +52,6 @@ def envoyer_mail(type_mail = '', regime = '', inscrit = '', code = ''):
         if (type_mail == 'inscription') and (code == None or code == ''):
             raise ValueError("Impossible d'envoyer ce mail sans code d'activation")
 
-    if not inscrit.email:
-        raise ValueError("%s n'est pas de type django.contrib.auth.models.User")
 
     sujet, destinataire, envoyeur = 'Inscription sur SIDINFOR', inscrit.email, 'parice02@hotmail.com'
     contenu_texte, contenu_html = '', ''
@@ -63,14 +61,12 @@ def envoyer_mail(type_mail = '', regime = '', inscrit = '', code = ''):
         contenu_texte = strip_tags(contenu_html)
          
     elif (regime == 'Postulant') and (code != ''):
-        contenu_html = render_to_string(template_name = 'envoi_mail.html', context = {'type_mail': type_mail, 'regime': 'postulant', 'user_name': inscrit, 'code': code})
+        contenu_html = render_to_string(template_name = 'envoi_mail.html', context = {'type_mail': type_mail, 'regime': 'postulant', 'user_name': inscrit.username, 'code': code})
         contenu_texte = contenu_html
     else:
         raise ValueError("Ce régime: '%s' n'est pas pris en compte." % (regime,))
         
-    message_electronique = EmailMultiAlternatives(subject = sujet, body = contenu_texte, to = [destinataire], from_email = envoyeur)
-    message_electronique.attach_alternative(contenu_html, 'text/html')
-    mail_envoye = message_electronique.send()
+    mail_envoye = send_mail(subject = sujet, message = contenu_texte, from_email = envoyeur, recipient_list = [destinataire], html_message = contenu_html)
     if mail_envoye != 0: return True
     else: return False
 

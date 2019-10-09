@@ -4,22 +4,62 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title></title>
-	<!-- <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css' %}"/ -->
+	<!-- <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css' %}"> -->
+	<link rel="stylesheet" type="text/css" media="all" href="http://localhost:8000/static/bootstrap/css/bootstrap.min.css">
 	</head>
 	<body style="font-family: 'Times New Roman'">
-		<div class="row mt-5">
-			<div class="col-12">
-				<div class="row"> <div class="col-12" style="text-align: center;"> <h4> LISTE DEFINITIVES POUR LE COMPTE DU RECRUTEMENT {{niveau|upper}} </h1> </div> </div>
-				<table border="1" width="100%">
-					<tr> <th>Numéro dossier</th> <th>Nom(s)</th> <th>Prénom(s)</th> <th>Date de Naissance</th> <th>Lieu de naissance</th> <th>Etablissement</th> </tr>
-					{% for postulant in liste_def %}
-					<tr> <td> {{postulant.dossier.numero_dossier}} </td> <td> {{postulant.nom}} </td> <td> {{postulant.prenom}} </td> <td> {{postulant.date_naissance|date:"d/m/o"}} </td> <td> {{postulant.lieu_naissance}} </td> <td> {{postulant.etablissement_origine}} </td> </tr>
-					{% empty %}
-					<tr> <td colspan="6"> Personne n'a été selectionnée </td> </tr>
-					{% endfor %}
-				</table>
-				Liste arrêté à un total de {{liste_def|length}} nom{{liste_def|length|pluralize}}	
+
+		<div class="row">
+			<div class="col-4">
+				<div class="row">UNIVERSIÉ JOSEPH KI-ZERBO <br> -=-=-=-=-=-=-</div>
+				<div class="row"> 
+					UNITE DE FORMATION ET DE RECHERCHE 
+					<br> EN SCIENCES EXACTES ET APPLIQUEE
+					<br>(UFR-SEA)
+					<br> -=-=-=-=-=-=-
+				</div>
+				<div class="row">Département Informatique</div>
+			</div>
+			<div class="col-4"><img src="http://localhost:8000/static/img/logo1.png" alt="logo"></div>
+			<div class="col-4">
+				<div class="row">BURKINA FASO <br> -=-=-=-=-=-=-</div>
+				<div class="row">Unité - Progrès - Justice</div>
 			</div>
 		</div>
+
+		<div class="row">
+			<div class="col-12">
+				<div class="row mb-5"> 
+					<div class="col-12" style="text-align: center;">
+						<h4> LISTE DEFINITIVES POUR LE COMPTE DU RECRUTEMENT {{niveau|upper}} </h4>
+					</div>
+				</div>
+				{% if liste_def %}
+
+				<table border="1" width="100%">
+					<tr>
+						<th>Nº</th>
+						<th>Nom(s)</th>
+						<th>Prénom(s)</th>
+						<th>Date de Naissance</th>
+						<th>Etablissement</th>
+					</tr>
+					{% for postulant in liste_def %}
+					<tr>
+						<td align="center"> {{forloop.counter}} </td>
+						<td align="center"> {{postulant.nom}} </td>
+						<td align="center"> {{postulant.prenom}} </td>
+						<td align="center"> {{postulant.date_naissance|date:"d/m/o"}} </td>
+						<td align="center"> {{postulant.etablissement_origine}} </td>
+					</tr>
+					{% endfor %}
+				</table>
+				<div class="mt-5"> Liste arrêté à un total de {{liste_def|length}} nom{{liste_def|length|pluralize}} </div>
+				{% else %}
+				<div>Personne n'a été selectionnée</div>
+				{% endif %}
+			</div>
+		</div>
+		<script src="http://localhost:8000/static/bootstrap/js/bootstrap.min.js"></script>
 	</body>
 </html>

@@ -44,6 +44,7 @@ class Postulant (Personne):
     """
     lieu_naissance = models.CharField('Lieu de naissance', max_length = 100, null=True, blank=True)
     #nationalite = models.CharField("Nationalité", max_length = 100, null = True, blank=True)
+    statut_post = models.CharField('Statut', max_length = 100, null=True, blank=True)
     ville = models.CharField(verbose_name = 'Vile de résidence',max_length = 100, null = True, blank=True)
     etablissement_origine = models.ForeignKey('Etablissement', verbose_name = "Établissement d'origine",
                                               on_delete = models.DO_NOTHING, null = True, blank=True)
@@ -58,8 +59,6 @@ class Postulant (Personne):
     def __str__(self):
         return self.prenom+' '+self.nom
     
-
-
 class DocumentId(models.Model):
     """
     Classe contenant les information sur la pièce d'identié du postulant
@@ -72,8 +71,7 @@ class DocumentId(models.Model):
     lieu_etablissement = models.CharField("Lieu d'établissement", max_length = 100, null = True, blank=True)
     date_etablissement = models.DateField("Date d'établissement", null = True, blank=True)
     date_expiration = models.DateField("Date d'expiration", null = True, blank=True)
-    
-    
+     
     def __str__(self):
         return self.type_doc+'\t'+self.numero_doc
     
@@ -209,13 +207,16 @@ class Dossier(models.Model):
     numero_dossier = models.CharField(max_length = 20, primary_key = True)
     date_inscription = models.DateTimeField(auto_now_add=True, null=False, blank = False)
     date_modif = models.DateTimeField(auto_now=True, null=False, blank = False)
-    etat_traitement = models.CharField(choices = (('attente', 'En attente du remplissage'), ('encours', 'Encours'),
-                                        ('rejeté', 'Rejeté'), ('validé', 'Validé'), ('annulé', 'Annulé')), max_length = 20)
+    commentaire_dos = models.TextField("Commentaire", null = True, blank = True, max_length = 200)
+    observation_dos = models.TextField("Observation", null = True, blank = True, max_length = 200)
+    etat_traitement = models.CharField(choices = (('complet', 'Complet'), ('incomplet', 'Incomplet'),('annulé', 'Annulé')), max_length = 20, null = True, blank = True)
+    validation = models.CharField(choices = (('validé', 'Validé'), ('attente', 'En attente'),('rejeté', 'Rejeté')), max_length = 20, null = True, blank = True)
     
     def __str__(self):
         return self.numero_dossier+' - '+ self.date_inscription.strftime('%A, %d %B %Y %H:%M:%S') +' - '+self.etat_traitement
+
     
-    
+
 #Paramètre upload_to = depot_dossier/uploads    
 class Fichiers(models.Model):
     """
@@ -287,4 +288,3 @@ class Etablissement(models.Model):
 
     def __str__(self):
         return self.nom_etablissement
-    

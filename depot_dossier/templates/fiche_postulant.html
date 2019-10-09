@@ -1,9 +1,11 @@
 {% extends "admin/base_site.html" %}
 {% load i18n static %}
 {% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_field %}
 {% block extrastyle %}
 	<link rel="stylesheet" type="text/css" href="{% static 'css/liste_table.css' %}"/>
-	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.css' %}"/>
+	<!-- <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css' %}"/> -->
 	<link rel="stylesheet" type="text/css" href="{% static 'css/modal.css' %}"/>
 
 {% endblock %}
@@ -11,7 +13,7 @@
 {% block breadcrumbs %}
     <div class="breadcrumbs">
     	<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &rsaquo;
-    	<a href="{% url 'admin:gestion' %}"> Gestion & Suivi </a> &rsaquo;
+    	<a href="{% url 'admin:gestion' %}"> Administration </a> &rsaquo;
     	{% if trouve %}
     	<a href="{% url 'admin:gestion' postulant.formation.niveau %}"> Liste des candidats {{postulant.formation.niveau}} </a> &rsaquo;
     	Fiche de {{postulant.prenom}} {{postulant.nom}}
@@ -24,6 +26,11 @@
 	{% if trouve %}
 	
 		{% if postulant %}
+		<h2 class="section">Appréciation du profil</h2>
+		<div class="row">
+				{% crispy form_dos %}
+		</div>
+
 		<h2 class="section">Informations personnelles</h2>
 		<div class="row">
 			<div class="col-7">

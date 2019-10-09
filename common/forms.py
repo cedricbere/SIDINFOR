@@ -147,14 +147,13 @@ class FormPostulant(forms.ModelForm):
         
     class Meta:
         model = Postulant
-        fields = ('nom', 'prenom', 'sexe', 'date_naissance', 'pays')
+        fields = ('nom', 'prenom', 'sexe', 'date_naissance')
         widgets = {
             'date_naissance': DatePickerInput(options={'format': 'DD/MM/YYYY'},
                 attrs={'data-toggle': 'popover', 'data-content': 'Veuillez entrer votre date de naissance.'}),
             'nom': forms.TextInput(attrs={'placeholder': 'votre nom', 'data-toggle': 'popover', 'data-content':'Veuillez saisir votre nom de famille.',}),
             'prenom': forms.TextInput(attrs={'placeholder': 'votre prénom', 'data-toggle': 'popover', 'data-content':'Veuillez saisir votre (vos) prénom(s).',}),            
             'sexe': forms.Select(attrs={'data-toggle': 'popover', 'data-content': 'Veuillez choisir votre sexe.'}),
-            'pays': forms.Select(attrs={'data-toggle': 'popover', 'data-content': 'Veuillez choisir votre pays.'}),
             }
 
     def clean(self):
